@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import ColorDot from './ColorDot'
+import { getImageUrl } from '../lib/imageUrl'
 import styles from './ProductCard.module.css'
 
 const FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect fill='%230D0D0D' width='400' height='400'/%3E%3Ctext x='50%25' y='50%25' fill='%23333' font-size='14' text-anchor='middle' dy='.3em' font-family='Inter'%3ESem imagem%3C/text%3E%3C/svg%3E"
@@ -28,7 +29,7 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, index 
       <div className={styles.imgWrap}>
         <img
           className={styles.img}
-          src={product.image_url}
+          src={getImageUrl(product.image_url)}
           alt={product.title}
           loading="lazy"
           onError={e => { e.target.src = FALLBACK }}

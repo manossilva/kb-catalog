@@ -3,11 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Header from '../components/Header'
 import Tabs from '../components/Tabs'
 import ProductCard from '../components/ProductCard'
+import SkeletonCard from '../components/SkeletonCard'
 import ProductModal from '../components/ProductModal'
 import LoginModal from '../components/LoginModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import GoldenLoader from '../components/GoldenLoader'
 import styles from './Catalog.module.css'
+
+const SKELETON_COUNT = 8
 
 export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct }) {
   const [activeTab, setActiveTab] = useState('all')
@@ -29,22 +32,25 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
   const handleEdit = (p) => { setEditProduct(p); setShowForm(true) }
 
   const handleSave = async (id, form, sizes, colors) => {
-    if (id) {
-      await updateProduct(id, form, sizes, colors)
-    } else {
-      await createProduct(form, sizes, colors)
-    }
+    if (id) await updateProduct(id, form, sizes, colors)
+    else     await createProduct(form, sizes, colors)
   }
 
   const handleConfirmDelete = async () => {
-    if (deleteId) {
-      await deleteProduct(deleteId)
-      setDeleteId(null)
-    }
+    if (deleteId) { await deleteProduct(deleteId); setDeleteId(null) }
   }
 
   return (
     <div className={styles.root}>
+      {/* ── Background decorativo ── */}
+      <div className={styles.bgLayer} aria-hidden="true">
+        <div className={styles.bgGlow1} />
+        <div className={styles.bgGlow2} />
+        <div className={styles.bgGlow3} />
+        <div className={styles.bgWatermark}>KB</div>
+        <div className={styles.bgGrid} />
+      </div>
+
       <GoldenLoader visible={loading} />
 
       <Header
@@ -56,58 +62,55 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
 
       <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <AnimatePresence mode="wait">
-        {loading ? (
-          <motion.div
-            key="loading"
-            className={styles.center}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <div className={styles.loadingInner}>
-              <div className="spinner" />
-              <p className={styles.loadingText}>Carregando</p>
-            </div>
-          </motion.div>
-        ) : filtered.length === 0 ? (
-          <motion.div
-            key="empty"
-            className={styles.empty}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className={styles.emptyIcon}>◈</div>
-            <p className={styles.emptyText}>Nenhum produto encontrado</p>
-            {user && (
-              <button className="btn btn-primary" style={{ marginTop: 24 }} onClick={handleNew}>
-                Adicionar produto
-              </button>
-            )}
-          </motion.div>
-        ) : (
-          <motion.div
-            key={activeTab}
-            className={styles.grid}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {filtered.map((p, i) => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                isAdmin={!!user}
-                onEdit={handleEdit}
-                onDelete={setDeleteId}
-                index={i}
-              />
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Skeleton — mostra enquanto carrega sem bloquear */}
+      {loading ? (
+        <div className={styles.grid}>
+          {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          {filtered.length === 0 ? (
+            <motion.div
+              key="empty"
+              className={styles.empty}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className={styles.emptyIcon}>◈</div>
+              <p className={styles.emptyText}>Nenhum produto encontrado</p>
+              {user && (
+                <button className="btn btn-primary" style={{ marginTop: 24 }} onClick={handleNew}>
+                  Adicionar produto
+                </button>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              key={activeTab}
+              className={styles.grid}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              {filtered.map((p, i) => (
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  isAdmin={!!user}
+                  onEdit={handleEdit}
+                  onDelete={setDeleteId}
+                  index={i}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
 
       <AnimatePresence>
         {showLogin && (

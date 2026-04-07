@@ -1,0 +1,47 @@
+.card {
+  background: var(--bg2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  composes: skeleton from global;
+}
+
+.body {
+  padding: 18px;
+}
+
+.line {
+  composes: skeleton from global;
+  border-radius: 3px;
+  margin-bottom: 6px;
+}
+
+.badges {
+  display: flex;
+  gap: 6px;
+  margin: 14px 0 12px;
+}
+
+.badge {
+  height: 22px;
+  border-radius: var(--radius2);
+  composes: skeleton from global;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  composes: skeleton from global;
+}

@@ -2,29 +2,36 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 48px;
+  padding: 20px 48px;
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(5, 5, 5, 0.85);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+  background: rgba(5, 5, 5, 0.88);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.07);
 }
 
 .logoWrap {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
 .logo {
   font-family: var(--display);
-  font-size: 22px;
-  font-weight: 400;
+  font-size: 20px;
+  font-weight: 800;
   color: var(--gold);
-  letter-spacing: 3px;
+  letter-spacing: 4px;
   text-transform: uppercase;
+}
+
+.logoImg {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .logoLine {
@@ -33,7 +40,7 @@
   background: linear-gradient(
     90deg,
     var(--gold) 0%,
-    rgba(201, 168, 76, 0.4) 60%,
+    rgba(201, 168, 76, 0.35) 55%,
     transparent 100%
   );
 }
@@ -45,12 +52,13 @@
 }
 
 @media (max-width: 768px) {
-  .header { padding: 18px 24px; }
-  .logo { font-size: 18px; letter-spacing: 2px; }
+  .header { padding: 16px 24px; }
+  .logo { font-size: 17px; letter-spacing: 3px; }
+  .logoImg { height: 32px; }
 }
 
 @media (max-width: 480px) {
-  .header { padding: 14px 16px; }
-  .logo { font-size: 16px; letter-spacing: 1.5px; }
-  .actions .btn { padding: 8px 14px; font-size: 10px; }
+  .header { padding: 13px 16px; }
+  .logo { font-size: 14px; letter-spacing: 2px; }
+  .logoImg { height: 28px; }
 }
