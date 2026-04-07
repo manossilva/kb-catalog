@@ -5,7 +5,7 @@ import Catalog from './pages/Catalog'
 
 export default function App() {
   const { user, loading: authLoading, signIn, signOut } = useAuth()
-  const { sections } = useSections()
+  const { sections, createSection } = useSections()
   const { products, loading: prodLoading, createProduct, updateProduct, deleteProduct } = useProducts()
 
   return (
@@ -19,6 +19,7 @@ export default function App() {
       createProduct={createProduct}
       updateProduct={updateProduct}
       deleteProduct={deleteProduct}
+      createSection={createSection}
     />
   )
 }

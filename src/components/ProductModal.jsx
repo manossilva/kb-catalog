@@ -37,104 +37,61 @@ function ColorEntry({ c, i, onUpdate, onRemove }) {
       </div>
 
       <div className={styles.colorTypeToggle}>
-        <button
-          type="button"
-          className={`${styles.toggleBtn} ${!isPattern ? styles.toggleActive : ''}`}
-          onClick={() => onUpdate(i, 'type', 'solid')}
-        >
-          Cor Sólida
-        </button>
-        <button
-          type="button"
-          className={`${styles.toggleBtn} ${isPattern ? styles.toggleActive : ''}`}
-          onClick={() => onUpdate(i, 'type', 'pattern')}
-        >
-          Estampa
-        </button>
+        <button type="button" className={`${styles.toggleBtn} ${!isPattern ? styles.toggleActive : ''}`} onClick={() => onUpdate(i, 'type', 'solid')}>Cor Sólida</button>
+        <button type="button" className={`${styles.toggleBtn} ${isPattern ? styles.toggleActive : ''}`} onClick={() => onUpdate(i, 'type', 'pattern')}>Estampa</button>
       </div>
 
       {!isPattern ? (
         <div className="field">
           <label>Cor HEX</label>
           <div className={styles.colorPicker}>
-            <input
-              type="color"
-              value={c.hex_color || '#CCCCCC'}
-              onChange={e => onUpdate(i, 'hex_color', e.target.value)}
-              className={styles.colorInput}
-            />
-            <input
-              value={c.hex_color || ''}
-              onChange={e => onUpdate(i, 'hex_color', e.target.value)}
-              placeholder="#CCCCCC"
-              style={{ flex: 1 }}
-            />
+            <input type="color" value={c.hex_color || '#CCCCCC'} onChange={e => onUpdate(i, 'hex_color', e.target.value)} className={styles.colorInput} />
+            <input value={c.hex_color || ''} onChange={e => onUpdate(i, 'hex_color', e.target.value)} placeholder="#CCCCCC" style={{ flex: 1 }} />
           </div>
         </div>
       ) : (
         <div className="field">
           <label>Imagem da Estampa</label>
           <div className={styles.patternUpload}>
-            {c.pattern_url && (
-              <img src={c.pattern_url} alt="Estampa" className={styles.patternPreview} />
-            )}
-            <button
-              type="button"
-              className={`btn btn-ghost btn-sm ${styles.uploadBtn}`}
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-            >
+            {c.pattern_url && <img src={c.pattern_url} alt="Estampa" className={styles.patternPreview} />}
+            <button type="button" className={`btn btn-ghost btn-sm ${styles.uploadBtn}`} onClick={() => fileRef.current?.click()} disabled={uploading}>
               {uploading ? 'Enviando...' : c.pattern_url ? 'Trocar imagem' : 'Selecionar imagem'}
             </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={handleFile}
-            />
+            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFile} />
           </div>
         </div>
       )}
 
-      <button className="btn btn-danger btn-sm" style={{ marginTop: 8 }} onClick={() => onRemove(i)}>
-        Remover
-      </button>
+      <button className="btn btn-danger btn-sm" style={{ marginTop: 8 }} onClick={() => onRemove(i)}>Remover</button>
     </div>
   )
 }
 
-export default function ProductModal({ product, sections, onClose, onSave }) {
+export default function ProductModal({ product, sections, onClose, onSave, onCreateSection }) {
   const isEdit = !!product?.id
+
+  const sortedSections = [...sections].sort((a, b) => a.name.localeCompare(b.name))
 
   const [form, setForm] = useState({
     title: product?.title || '',
     image_url: product?.image_url || '',
     video_url: product?.video_url || '',
     composition: product?.composition || '100% Poliéster',
-    section_id: product?.section_id || sections[0]?.id || '',
+    section_id: product?.section_id || sortedSections[0]?.id || '',
   })
 
   const [sizes, setSizes] = useState(
-    product?.sizes?.map(s => ({
-      size_type: s.size_type,
-      reference: s.reference,
-      quantity: s.quantity,
-      dimensions: s.dimensions || {}
-    })) || []
+    product?.sizes?.map(s => ({ size_type: s.size_type, reference: s.reference, quantity: s.quantity, dimensions: s.dimensions || {} })) || []
   )
 
   const [colors, setColors] = useState(
-    product?.colors?.map(c => ({
-      code: c.code,
-      name: c.name,
-      hex_color: c.hex_color || '#CCCCCC',
-      pattern_url: c.pattern_url || '',
-      type: c.pattern_url ? 'pattern' : 'solid',
-    })) || []
+    product?.colors?.map(c => ({ code: c.code, name: c.name, hex_color: c.hex_color || '#CCCCCC', pattern_url: c.pattern_url || '', type: c.pattern_url ? 'pattern' : 'solid' })) || []
   )
 
   const [saving, setSaving] = useState(false)
+  const [newSectionName, setNewSectionName] = useState('')
+  const [creatingSection, setCreatingSection] = useState(false)
+  const [showNewSection, setShowNewSection] = useState(false)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
@@ -146,6 +103,20 @@ export default function ProductModal({ product, sections, onClose, onSave }) {
   const removeColor = i => setColors(c => c.filter((_, idx) => idx !== i))
   const updateColor = (i, k, v) => setColors(c => c.map((x, idx) => idx === i ? { ...x, [k]: v } : x))
 
+  const handleCreateSection = async () => {
+    if (!newSectionName.trim()) return
+    setCreatingSection(true)
+    try {
+      const created = await onCreateSection(newSectionName.trim())
+      set('section_id', created.id)
+      setNewSectionName('')
+      setShowNewSection(false)
+    } catch (err) {
+      alert('Erro ao criar seção: ' + err.message)
+    }
+    setCreatingSection(false)
+  }
+
   const handleSave = async () => {
     if (!form.title.trim() || !form.image_url.trim()) {
       alert('Título e URL da imagem são obrigatórios.')
@@ -153,7 +124,6 @@ export default function ProductModal({ product, sections, onClose, onSave }) {
     }
     setSaving(true)
     try {
-      // strip the `type` field before saving — it's UI-only
       const cleanColors = colors.map(({ type, ...rest }) => ({
         ...rest,
         hex_color: type === 'pattern' ? null : rest.hex_color,
@@ -168,22 +138,8 @@ export default function ProductModal({ product, sections, onClose, onSave }) {
   }
 
   return (
-    <motion.div
-      className="modal-overlay"
-      onClick={onClose}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
-    >
-      <motion.div
-        className="modal"
-        onClick={e => e.stopPropagation()}
-        initial={{ opacity: 0, y: 40, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-      >
+    <motion.div className="modal-overlay" onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
+      <motion.div className="modal" onClick={e => e.stopPropagation()} initial={{ opacity: 0, y: 40, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20 }} transition={{ type: 'spring', stiffness: 380, damping: 30 }}>
         <h2>{isEdit ? 'Editar Produto' : 'Novo Produto'}</h2>
 
         <div className="field">
@@ -191,12 +147,51 @@ export default function ProductModal({ product, sections, onClose, onSave }) {
           <input value={form.title} onChange={e => set('title', e.target.value)} placeholder="Protetor para Sofá Linho" />
         </div>
 
+        {/* ── Seção ── */}
         <div className="field">
           <label>Seção</label>
-          <select value={form.section_id} onChange={e => set('section_id', e.target.value)}>
-            {sections.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
+          <div className={styles.sectionRow}>
+            <select value={form.section_id} onChange={e => set('section_id', e.target.value)} style={{ flex: 1 }}>
+              {sortedSections.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+            <button
+              type="button"
+              className={`btn btn-ghost btn-sm ${styles.newSectionBtn}`}
+              onClick={() => setShowNewSection(v => !v)}
+            >
+              {showNewSection ? '✕' : '+ Nova'}
+            </button>
+          </div>
         </div>
+
+        {showNewSection && (
+          <motion.div
+            className={styles.newSectionBox}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className={styles.newSectionInner}>
+              <input
+                className={styles.newSectionInput}
+                value={newSectionName}
+                onChange={e => setNewSectionName(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleCreateSection()}
+                placeholder="Nome da nova seção (ex: Cortina)"
+                autoFocus
+              />
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={handleCreateSection}
+                disabled={creatingSection || !newSectionName.trim()}
+              >
+                {creatingSection ? '...' : 'Criar'}
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         <div className="field">
           <label>URL da Imagem</label>
@@ -219,7 +214,6 @@ export default function ProductModal({ product, sections, onClose, onSave }) {
             <span className={styles.sectionLabel}>Tamanhos / Referências</span>
             <button className="btn btn-ghost btn-sm" onClick={addSize}>+ Tamanho</button>
           </div>
-
           {sizes.map((s, i) => (
             <div key={i} className="sub-section">
               <div className="row">
@@ -250,13 +244,11 @@ export default function ProductModal({ product, sections, onClose, onSave }) {
             <span className={styles.sectionLabel}>Cores / Estampas</span>
             <button className="btn btn-ghost btn-sm" onClick={addColor}>+ Cor</button>
           </div>
-
           {colors.map((c, i) => (
             <ColorEntry key={i} c={c} i={i} onUpdate={updateColor} onRemove={removeColor} />
           ))}
         </div>
 
-        {/* ===== FOOTER ===== */}
         <div className={styles.footer}>
           <button className="btn btn-ghost" onClick={onClose}>Cancelar</button>
           <button className="btn btn-primary" onClick={handleSave} disabled={saving}>

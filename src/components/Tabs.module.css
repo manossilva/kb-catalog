@@ -66,8 +66,8 @@
 }
 
 @media (max-width: 480px) {
-  .tabs { padding: 10px 16px; }
+  .tabs { padding: 10px 12px; gap: 4px; }
   .wrap { top: 54px; }
-  .tab { padding: 7px 16px; font-size: 10px; }
-  .border { margin: 0 16px; }
+  .tab { padding: 10px 18px; font-size: 12px; font-weight: 700; letter-spacing: 0.8px; }
+  .border { margin: 0 12px; }
 }

@@ -2,7 +2,8 @@ import { motion } from 'framer-motion'
 import styles from './Tabs.module.css'
 
 export default function Tabs({ sections, activeTab, onTabChange }) {
-  const tabs = [{ id: 'all', name: 'Todos' }, ...sections]
+  const sorted = [...sections].sort((a, b) => a.name.localeCompare(b.name))
+  const tabs = [{ id: 'all', name: 'Todos' }, ...sorted]
 
   return (
     <div className={styles.wrap}>

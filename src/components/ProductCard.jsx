@@ -1,5 +1,7 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import ColorDot from './ColorDot'
+import Lightbox from './Lightbox'
 import { getImageUrl } from '../lib/imageUrl'
 import styles from './ProductCard.module.css'
 
@@ -12,75 +14,85 @@ const cardVariants = {
 
 export default function ProductCard({ product, isAdmin, onEdit, onDelete, index = 0 }) {
   const { sizes = [], colors = [] } = product
+  const [lightbox, setLightbox] = useState(false)
 
   return (
-    <motion.div
-      className={styles.card}
-      variants={cardVariants}
-      initial="hidden"
-      animate="visible"
-      transition={{
-        duration: 0.5,
-        delay: index * 0.07,
-        ease: [0.25, 0.46, 0.45, 0.94]
-      }}
-      whileHover={{ y: -6, transition: { duration: 0.3, ease: 'easeOut' } }}
-    >
-      <div className={styles.imgWrap}>
-        <img
-          className={styles.img}
-          src={getImageUrl(product.image_url)}
-          alt={product.title}
-          loading="lazy"
-          onError={e => { e.target.src = FALLBACK }}
-        />
-        <div className={styles.imgOverlay} />
-        <div className={styles.imgCorner} />
-      </div>
+    <>
+      <motion.div
+        className={styles.card}
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ duration: 0.5, delay: index * 0.07, ease: [0.25, 0.46, 0.45, 0.94] }}
+        whileHover={{ y: -6, transition: { duration: 0.3, ease: 'easeOut' } }}
+      >
+        <div className={styles.imgWrap} onClick={() => setLightbox(true)} title="Ver foto completa">
+          <img
+            className={styles.img}
+            src={getImageUrl(product.image_url)}
+            alt={product.title}
+            loading="lazy"
+            onError={e => { e.target.src = FALLBACK }}
+          />
+          <div className={styles.imgOverlay} />
+          <div className={styles.imgCorner} />
+          <div className={styles.zoomHint}>⤢</div>
+        </div>
 
-      <div className={styles.body}>
-        <div className={styles.topLine} />
-        <h3 className={styles.title}>{product.title}</h3>
-        <p className={styles.comp}>{product.composition}</p>
+        <div className={styles.body}>
+          <div className={styles.topLine} />
+          <h3 className={styles.title}>{product.title}</h3>
+          <p className={styles.comp}>{product.composition}</p>
 
-        {sizes.length > 0 && (
-          <div className={styles.sizes}>
-            {sizes.map(s => (
-              <div key={s.id} className={styles.badge}>
-                <span className={styles.badgeType}>{s.size_type}</span>
-                <span className={styles.badgeSep}>·</span>
-                <span>REF {s.reference}</span>
-                <span className={styles.badgeSep}>·</span>
-                <span>{s.quantity} un</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {colors.length > 0 && (
-          <div className={styles.colors}>
-            {colors.map(c => (
-              <ColorDot key={c.id} hex={c.hex_color} code={c.code} name={c.name} patternUrl={c.pattern_url} />
-            ))}
-          </div>
-        )}
-
-        <div className={styles.footer}>
-          {product.video_url ? (
-            <a href={product.video_url} target="_blank" rel="noopener noreferrer" className={styles.video}>
-              <span className={styles.videoIcon}>▶</span>
-              Ver vídeo
-            </a>
-          ) : <span />}
-
-          {isAdmin && (
-            <div className={styles.adminBtns}>
-              <button className="btn btn-ghost btn-sm" onClick={() => onEdit(product)}>Editar</button>
-              <button className="btn btn-danger btn-sm" onClick={() => onDelete(product.id)}>×</button>
+          {sizes.length > 0 && (
+            <div className={styles.sizes}>
+              {sizes.map(s => (
+                <div key={s.id} className={styles.badge}>
+                  <span className={styles.badgeType}>{s.size_type}</span>
+                  <span className={styles.badgeSep}>·</span>
+                  <span>REF {s.reference}</span>
+                  <span className={styles.badgeSep}>·</span>
+                  <span>{s.quantity} un</span>
+                </div>
+              ))}
             </div>
           )}
+
+          {colors.length > 0 && (
+            <div className={styles.colors}>
+              {colors.map(c => (
+                <ColorDot key={c.id} hex={c.hex_color} code={c.code} name={c.name} patternUrl={c.pattern_url} />
+              ))}
+            </div>
+          )}
+
+          <div className={styles.footer}>
+            {product.video_url ? (
+              <a href={product.video_url} target="_blank" rel="noopener noreferrer" className={styles.video}>
+                <span className={styles.videoIcon}>▶</span>
+                Ver vídeo
+              </a>
+            ) : <span />}
+
+            {isAdmin && (
+              <div className={styles.adminBtns}>
+                <button className="btn btn-ghost btn-sm" onClick={() => onEdit(product)}>Editar</button>
+                <button className="btn btn-danger btn-sm" onClick={() => onDelete(product.id)}>×</button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+
+      <AnimatePresence>
+        {lightbox && (
+          <Lightbox
+            src={product.image_url}
+            alt={product.title}
+            onClose={() => setLightbox(false)}
+          />
+        )}
+      </AnimatePresence>
+    </>
   )
 }

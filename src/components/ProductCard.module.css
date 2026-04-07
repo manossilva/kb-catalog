@@ -16,7 +16,11 @@
 }
 
 /* ── Image ────────────────────────────────── */
-.imgWrap { position: relative; overflow: hidden; }
+.imgWrap {
+  position: relative;
+  overflow: hidden;
+  cursor: zoom-in;
+}
 
 .img {
   width: 100%;
@@ -46,6 +50,31 @@
   transition: opacity 0.4s ease;
 }
 .card:hover .imgCorner { opacity: 1; }
+
+/* ícone de zoom que aparece no hover */
+.zoomHint {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(5, 5, 5, 0.75);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  color: var(--gold);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+}
+.imgWrap:hover .zoomHint {
+  opacity: 1;
+  transform: scale(1);
+}
 
 /* ── Body ─────────────────────────────────── */
 .body { padding: 18px; }

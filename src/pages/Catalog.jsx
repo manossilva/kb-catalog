@@ -12,7 +12,7 @@ import styles from './Catalog.module.css'
 
 const SKELETON_COUNT = 8
 
-export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct }) {
+export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, createSection }) {
   const [activeTab, setActiveTab] = useState('all')
   const [showLogin, setShowLogin] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -122,6 +122,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
             sections={sections}
             onClose={() => setShowForm(false)}
             onSave={handleSave}
+            onCreateSection={createSection}
           />
         )}
         {deleteId && (

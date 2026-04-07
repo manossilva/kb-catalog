@@ -92,6 +92,47 @@
 }
 
 /* ── Footer ───────────────────────────────── */
+/* ── Nova seção inline ────────────────────── */
+.sectionRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.newSectionBtn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.newSectionBox {
+  overflow: hidden;
+  margin-top: -10px;
+  margin-bottom: 18px;
+}
+
+.newSectionInner {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--bg3);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+
+.newSectionInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+}
+
+.newSectionInput::placeholder { color: var(--text2); }
+
+/* ── Footer ───────────────────────────────── */
 .footer {
   display: flex;
   gap: 12px;
