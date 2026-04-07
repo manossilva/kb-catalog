@@ -2,19 +2,40 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 32px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg2);
+  padding: 24px 48px;
   position: sticky;
   top: 0;
   z-index: 50;
+  background: rgba(5, 5, 5, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+}
+
+.logoWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .logo {
   font-family: var(--display);
-  font-size: 24px;
-  letter-spacing: 1px;
-  color: var(--accent);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.logoLine {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--gold) 0%,
+    rgba(201, 168, 76, 0.4) 60%,
+    transparent 100%
+  );
 }
 
 .actions {
@@ -24,6 +45,6 @@
 }
 
 @media (max-width: 600px) {
-  .header { padding: 16px; }
-  .logo { font-size: 20px; }
+  .header { padding: 16px 20px; }
+  .logo { font-size: 18px; }
 }

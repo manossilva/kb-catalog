@@ -1,89 +1,166 @@
 .card {
-  background: var(--surface);
+  background: var(--bg2);
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--border);
-  transition: all 0.3s;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  cursor: default;
 }
 
 .card:hover {
-  border-color: var(--accent);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(201, 168, 76, 0.3);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(201, 168, 76, 0.08),
+    inset 0 1px 0 rgba(201, 168, 76, 0.08);
+}
+
+/* ── Image ────────────────────────────────── */
+.imgWrap {
+  position: relative;
+  overflow: hidden;
 }
 
 .img {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
   background: var(--bg3);
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.card:hover .img { transform: scale(1.04); }
+
+.imgOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(5, 5, 5, 0.6) 100%
+  );
+  pointer-events: none;
 }
 
-.body {
-  padding: 16px;
+/* golden corner accent */
+.imgCorner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(201, 168, 76, 0.6) 0%,
+    rgba(201, 168, 76, 0.2) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.card:hover .imgCorner { opacity: 1; }
+
+/* ── Body ─────────────────────────────────── */
+.body { padding: 20px; }
+
+.topLine {
+  height: 1px;
+  margin-bottom: 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(201, 168, 76, 0.2) 0%,
+    transparent 80%
+  );
 }
 
 .title {
   font-family: var(--display);
-  font-size: 18px;
-  margin-bottom: 8px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 6px;
+  color: var(--text);
+  letter-spacing: 0.3px;
+  line-height: 1.3;
 }
 
 .comp {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text2);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
+/* ── Sizes ────────────────────────────────── */
 .sizes {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   background: var(--bg3);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: var(--radius2);
+  font-size: 10px;
   color: var(--text2);
   border: 1px solid var(--border);
+  letter-spacing: 0.5px;
 }
 
-.badge strong {
-  color: var(--text);
+.badgeType {
+  color: var(--gold);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
 
+.badgeSep {
+  color: var(--border2);
+}
+
+/* ── Colors ───────────────────────────────── */
 .colors {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
+/* ── Footer ───────────────────────────────── */
 .footer {
   display: flex;
   gap: 8px;
   align-items: center;
   justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
 }
 
 .video {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: var(--accent);
-  text-decoration: none;
-  font-size: 13px;
+  gap: 7px;
+  color: var(--text2);
+  font-size: 11px;
   font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.3s;
 }
 
-.video:hover {
-  text-decoration: underline;
+.video:hover { color: var(--gold); }
+
+.videoIcon {
+  font-size: 8px;
+  color: var(--gold);
+  transition: transform 0.3s;
 }
+.video:hover .videoIcon { transform: scale(1.3); }
 
 .adminBtns {
   display: flex;

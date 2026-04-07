@@ -1,15 +1,30 @@
+.logoLine {
+  height: 1px;
+  margin-bottom: 32px;
+  background: linear-gradient(
+    90deg,
+    var(--gold) 0%,
+    rgba(201, 168, 76, 0.3) 60%,
+    transparent 100%
+  );
+}
+
 .error {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--danger);
-  padding: 10px;
-  border-radius: 8px;
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+  color: #E57373;
+  padding: 12px 16px;
+  border-radius: var(--radius);
   font-size: 13px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  letter-spacing: 0.3px;
 }
 
 .actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-  margin-top: 8px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
 }

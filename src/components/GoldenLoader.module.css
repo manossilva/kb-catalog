@@ -1,0 +1,51 @@
+.wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  transition: opacity 0.4s ease;
+}
+
+.visible { opacity: 1; }
+.hidden  { opacity: 0; pointer-events: none; }
+
+.track {
+  height: 1px;
+  background: rgba(201, 168, 76, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.beam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 168, 76, 0.4) 20%,
+    #C9A84C 50%,
+    rgba(232, 201, 106, 0.9) 65%,
+    rgba(201, 168, 76, 0.4) 80%,
+    transparent 100%
+  );
+  animation: sweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.glow {
+  height: 40px;
+  background: linear-gradient(
+    to bottom,
+    rgba(201, 168, 76, 0.07) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+@keyframes sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
