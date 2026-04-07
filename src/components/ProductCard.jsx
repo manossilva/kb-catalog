@@ -59,7 +59,7 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, index 
         {colors.length > 0 && (
           <div className={styles.colors}>
             {colors.map(c => (
-              <ColorDot key={c.id} hex={c.hex_color} code={c.code} name={c.name} />
+              <ColorDot key={c.id} hex={c.hex_color} code={c.code} name={c.name} patternUrl={c.pattern_url} />
             ))}
           </div>
         )}

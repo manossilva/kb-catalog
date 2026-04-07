@@ -1,16 +1,17 @@
 .wrap {
   background: var(--bg);
   position: sticky;
-  top: 71px;
+  top: 67px;
   z-index: 40;
 }
 
 .tabs {
   display: flex;
   gap: 2px;
-  padding: 16px 48px;
+  padding: 14px 48px;
   overflow-x: auto;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 .tabs::-webkit-scrollbar { display: none; }
 
@@ -29,6 +30,7 @@
   white-space: nowrap;
   transition: color 0.3s ease;
   isolation: isolate;
+  flex-shrink: 0;
 }
 
 .pill {
@@ -41,7 +43,6 @@
 }
 
 .active { color: var(--gold); }
-
 .tab:hover:not(.active) { color: var(--text); }
 
 .label { position: relative; z-index: 1; }
@@ -52,14 +53,21 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(201, 168, 76, 0.15) 30%,
-    rgba(201, 168, 76, 0.15) 70%,
+    rgba(201, 168, 76, 0.12) 30%,
+    rgba(201, 168, 76, 0.12) 70%,
     transparent 100%
   );
 }
 
-@media (max-width: 600px) {
-  .tabs { padding: 12px 20px; }
-  .wrap { top: 63px; }
-  .border { margin: 0 20px; }
+@media (max-width: 768px) {
+  .tabs { padding: 12px 24px; }
+  .wrap { top: 60px; }
+  .border { margin: 0 24px; }
+}
+
+@media (max-width: 480px) {
+  .tabs { padding: 10px 16px; }
+  .wrap { top: 54px; }
+  .tab { padding: 7px 16px; font-size: 10px; }
+  .border { margin: 0 16px; }
 }
