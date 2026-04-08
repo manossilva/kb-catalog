@@ -39,3 +39,11 @@ CREATE POLICY "Auth update patterns"
 CREATE POLICY "Auth delete patterns"
   ON storage.objects FOR DELETE
   USING (bucket_id = 'patterns' AND auth.role() = 'authenticated');
+
+
+-- ============================================
+-- UPDATE V3.1 — Visibilidade de produtos
+-- ============================================
+
+-- Adiciona coluna visible (padrão: visível para todos)
+ALTER TABLE products ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT true;

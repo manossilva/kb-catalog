@@ -88,5 +88,15 @@ export function useProducts() {
     await load()
   }, [load])
 
-  return { products, loading, reload: load, createProduct, updateProduct, deleteProduct }
+  const toggleVisibility = useCallback(async (id, visible) => {
+    const { error } = await supabase
+      .from('products')
+      .update({ visible })
+      .eq('id', id)
+    if (error) throw error
+    // Atualiza local sem recarregar tudo
+    setProducts(ps => ps.map(p => p.id === id ? { ...p, visible } : p))
+  }, [])
+
+  return { products, loading, reload: load, createProduct, updateProduct, deleteProduct, toggleVisibility }
 }

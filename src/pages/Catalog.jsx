@@ -13,16 +13,18 @@ const ConfirmDialog = lazy(() => import('../components/ConfirmDialog'))
 
 const SKELETON_COUNT = 8
 
-export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, createSection, updateSection, deleteSection }) {
+export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, toggleVisibility, createSection, updateSection, deleteSection }) {
   const [activeTab, setActiveTab] = useState('all')
   const [showLogin, setShowLogin] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [editProduct, setEditProduct] = useState(null)
   const [deleteId, setDeleteId] = useState(null)
 
+  // Admin vê todos; usuário comum só vê os visíveis
+  const visible = user ? products : products.filter(p => p.visible !== false)
   const filtered = activeTab === 'all'
-    ? products
-    : products.filter(p => p.section_id === activeTab)
+    ? visible
+    : visible.filter(p => p.section_id === activeTab)
 
   const handleLogin = async (email, password) => {
     await signIn(email, password)
@@ -105,6 +107,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
                   isAdmin={!!user}
                   onEdit={handleEdit}
                   onDelete={setDeleteId}
+                  onToggleVisibility={toggleVisibility}
                   index={i}
                 />
               ))}

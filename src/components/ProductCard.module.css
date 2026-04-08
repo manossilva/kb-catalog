@@ -200,7 +200,33 @@
 .videoIcon { font-size: 8px; color: var(--gold); transition: transform 0.3s; }
 .video:hover .videoIcon { transform: scale(1.3); }
 
-.adminBtns { display: flex; gap: 5px; }
+.adminBtns { display: flex; gap: 5px; align-items: center; }
+
+/* Card oculto — só admin vê, com visual esmaecido */
+.cardHidden {
+  opacity: 0.45;
+  border-style: dashed;
+}
+.cardHidden:hover { opacity: 0.7; }
+
+/* Botão de visibilidade */
+.visibilityBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.visOn  { color: var(--gold); border-color: rgba(201,168,76,0.4); }
+.visOff { color: var(--text2); border-color: var(--border); }
+.visibilityBtn:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+.visibilityBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ── Mobile tweaks ────────────────────────── */
 @media (max-width: 600px) {
