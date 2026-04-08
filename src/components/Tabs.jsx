@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import styles from './Tabs.module.css'
 
@@ -7,15 +8,25 @@ function SectionMenu({ section, onEdit, onDelete }) {
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(section.name)
   const [saving, setSaving] = useState(false)
-  const menuRef = useRef()
+  const [dropPos, setDropPos] = useState({ top: 0, left: 0 })
+  const triggerRef = useRef()
   const inputRef = useRef()
+
+  // Calcula posição do dropdown baseado no botão ⋮
+  const openMenu = (e) => {
+    e.stopPropagation()
+    const rect = triggerRef.current.getBoundingClientRect()
+    setDropPos({
+      top: rect.bottom + 6,
+      left: rect.left + rect.width / 2,
+    })
+    setOpen(v => !v)
+  }
 
   // Fecha ao clicar fora
   useEffect(() => {
     if (!open) return
-    const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) setOpen(false)
-    }
+    const handler = () => setOpen(false)
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [open])
@@ -25,7 +36,8 @@ function SectionMenu({ section, onEdit, onDelete }) {
     if (editing) inputRef.current?.focus()
   }, [editing])
 
-  const handleEdit = () => {
+  const handleEdit = (e) => {
+    e.stopPropagation()
     setName(section.name)
     setEditing(true)
     setOpen(false)
@@ -44,7 +56,8 @@ function SectionMenu({ section, onEdit, onDelete }) {
     setEditing(false)
   }
 
-  const handleDelete = async () => {
+  const handleDelete = async (e) => {
+    e.stopPropagation()
     setOpen(false)
     if (!window.confirm(`Excluir a seção "${section.name}"?\nOs produtos desta seção não serão apagados.`)) return
     try {
@@ -55,7 +68,7 @@ function SectionMenu({ section, onEdit, onDelete }) {
   }
 
   return (
-    <span className={styles.menuWrap} ref={menuRef} onClick={e => e.stopPropagation()}>
+    <span className={styles.menuWrap} onClick={e => e.stopPropagation()}>
       {editing ? (
         <span className={styles.editInline}>
           <input
@@ -77,19 +90,22 @@ function SectionMenu({ section, onEdit, onDelete }) {
       ) : (
         <>
           <button
+            ref={triggerRef}
             className={styles.menuTrigger}
-            onClick={() => setOpen(v => !v)}
+            onClick={openMenu}
             title="Opções da seção"
           >
             ⋮
           </button>
 
-          {open && (
+          {open && createPortal(
             <motion.div
-              className={styles.dropdown}
+              className={styles.dropdownPortal}
+              style={{ top: dropPos.top, left: dropPos.left }}
               initial={{ opacity: 0, y: -6, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.12 }}
+              onMouseDown={e => e.stopPropagation()}
             >
               <button className={styles.dropItem} onClick={handleEdit}>
                 <span>✏</span> Renomear
@@ -98,7 +114,8 @@ function SectionMenu({ section, onEdit, onDelete }) {
               <button className={`${styles.dropItem} ${styles.dropDanger}`} onClick={handleDelete}>
                 <span>🗑</span> Excluir
               </button>
-            </motion.div>
+            </motion.div>,
+            document.body
           )}
         </>
       )}
