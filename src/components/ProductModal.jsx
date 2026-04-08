@@ -1,9 +1,69 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { uploadPattern } from '../lib/storage'
 import styles from './ProductModal.module.css'
 
-const SIZE_OPTIONS = ['Solteiro', 'Casal', 'Queen', 'King', '2 Lugares', '3 Lugares', 'Outro']
+const SIZE_PRESETS = ['Solteiro', 'Casal', 'Queen', 'King', '2 Lugares', '3 Lugares']
+const CUSTOM_VALUE = '__custom__'
+
+function SizeTypeField({ value, onChange }) {
+  // Se o valor já for personalizado (não está nos presets), começa no modo texto
+  const isCustom = value !== '' && !SIZE_PRESETS.includes(value)
+  const [mode, setMode] = useState(isCustom ? 'custom' : 'select')
+  const [customText, setCustomText] = useState(isCustom ? value : '')
+  const inputRef = useRef()
+
+  useEffect(() => {
+    if (mode === 'custom') inputRef.current?.focus()
+  }, [mode])
+
+  const handleSelectChange = (e) => {
+    const v = e.target.value
+    if (v === CUSTOM_VALUE) {
+      setMode('custom')
+      setCustomText('')
+      onChange('')
+    } else {
+      onChange(v)
+    }
+  }
+
+  const handleCustomChange = (e) => {
+    setCustomText(e.target.value)
+    onChange(e.target.value)
+  }
+
+  const backToSelect = () => {
+    setMode('select')
+    setCustomText('')
+    onChange('')
+  }
+
+  if (mode === 'custom') {
+    return (
+      <div className={styles.sizeTypeCustom}>
+        <input
+          ref={inputRef}
+          value={customText}
+          onChange={handleCustomChange}
+          placeholder="Ex: Janela de 3m, Cama Baú..."
+          className={styles.sizeTypeInput}
+        />
+        <button type="button" className={styles.sizeTypeBack} onClick={backToSelect} title="Voltar à lista">
+          ↩
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <select value={value} onChange={handleSelectChange}>
+      <option value="">Selecione</option>
+      {SIZE_PRESETS.map(o => <option key={o} value={o}>{o}</option>)}
+      <option value={CUSTOM_VALUE}>✏ Personalizado…</option>
+    </select>
+  )
+}
 
 function ColorEntry({ c, i, onUpdate, onRemove }) {
   const [uploading, setUploading] = useState(false)
@@ -219,10 +279,10 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
               <div className="row">
                 <div className="field">
                   <label>Tipo</label>
-                  <select value={s.size_type} onChange={e => updateSize(i, 'size_type', e.target.value)}>
-                    <option value="">Selecione</option>
-                    {SIZE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
+                  <SizeTypeField
+                    value={s.size_type}
+                    onChange={v => updateSize(i, 'size_type', v)}
+                  />
                 </div>
                 <div className="field">
                   <label>Referência</label>
