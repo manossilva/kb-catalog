@@ -141,7 +141,13 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   })
 
   const [sizes, setSizes] = useState(
-    product?.sizes?.map(s => ({ size_type: s.size_type, reference: s.reference, quantity: s.quantity, dimensions: s.dimensions || {} })) || []
+    product?.sizes?.map(s => ({
+      size_type: s.size_type,
+      reference: s.reference,
+      quantity: s.quantity,
+      // converte { Largura: '2m' } → [{ name: 'Largura', value: '2m' }]
+      dims: Object.entries(s.dimensions || {}).map(([name, value]) => ({ name, value }))
+    })) || []
   )
 
   const [colors, setColors] = useState(
@@ -155,9 +161,13 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
-  const addSize = () => setSizes(s => [...s, { size_type: '', reference: '', quantity: 0, dimensions: {} }])
-  const removeSize = i => setSizes(s => s.filter((_, idx) => idx !== i))
+  const addSize    = () => setSizes(s => [...s, { size_type: '', reference: '', quantity: 0, dims: [] }])
+  const removeSize = i  => setSizes(s => s.filter((_, idx) => idx !== i))
   const updateSize = (i, k, v) => setSizes(s => s.map((x, idx) => idx === i ? { ...x, [k]: v } : x))
+
+  const addDim    = (si)          => setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: [...x.dims, { name: '', value: '' }] } : x))
+  const removeDim = (si, di)      => setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: x.dims.filter((_, di2) => di2 !== di) } : x))
+  const updateDim = (si, di, k, v) => setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: x.dims.map((d, di2) => di2 === di ? { ...d, [k]: v } : d) } : x))
 
   const addColor = () => setColors(c => [...c, { code: '', name: '', hex_color: '#CCCCCC', pattern_url: '', type: 'solid' }])
   const removeColor = i => setColors(c => c.filter((_, idx) => idx !== i))
@@ -189,7 +199,14 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
         hex_color: type === 'pattern' ? null : rest.hex_color,
         pattern_url: type === 'pattern' ? rest.pattern_url : null,
       }))
-      await onSave(product?.id, form, sizes, cleanColors)
+      // converte [{ name, value }] → { name: value } antes de salvar
+      const cleanSizes = sizes.map(({ dims, ...rest }) => ({
+        ...rest,
+        dimensions: Object.fromEntries(
+          (dims || []).filter(d => d.name.trim()).map(d => [d.name.trim(), d.value])
+        )
+      }))
+      await onSave(product?.id, form, cleanSizes, cleanColors)
       onClose()
     } catch (err) {
       alert('Erro ao salvar: ' + err.message)
@@ -293,7 +310,42 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
                   <input type="number" value={s.quantity} onChange={e => updateSize(i, 'quantity', parseInt(e.target.value) || 0)} />
                 </div>
               </div>
-              <button className="btn btn-danger btn-sm" style={{ marginTop: 8 }} onClick={() => removeSize(i)}>Remover</button>
+
+              {/* ── Medidas opcionais ── */}
+              {s.dims.length > 0 && (
+                <div className={styles.dimsBlock}>
+                  {s.dims.map((d, di) => (
+                    <div key={di} className={styles.dimRow}>
+                      <input
+                        className={styles.dimName}
+                        value={d.name}
+                        onChange={e => updateDim(i, di, 'name', e.target.value)}
+                        placeholder="Ex: Largura"
+                      />
+                      <span className={styles.dimSep}>:</span>
+                      <input
+                        className={styles.dimValue}
+                        value={d.value}
+                        onChange={e => updateDim(i, di, 'value', e.target.value)}
+                        placeholder="Ex: 2,30m"
+                      />
+                      <button
+                        type="button"
+                        className={styles.dimRemove}
+                        onClick={() => removeDim(i, di)}
+                        title="Remover medida"
+                      >×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className={styles.sizeActions}>
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => addDim(i)}>
+                  + Medida
+                </button>
+                <button className="btn btn-danger btn-sm" onClick={() => removeSize(i)}>Remover tamanho</button>
+              </div>
             </div>
           ))}
         </div>

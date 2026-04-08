@@ -46,15 +46,28 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, index 
 
           {sizes.length > 0 && (
             <div className={styles.sizes}>
-              {sizes.map(s => (
-                <div key={s.id} className={styles.badge}>
-                  <span className={styles.badgeType}>{s.size_type}</span>
-                  <span className={styles.badgeSep}>·</span>
-                  <span>REF {s.reference}</span>
-                  <span className={styles.badgeSep}>·</span>
-                  <span>{s.quantity} un</span>
-                </div>
-              ))}
+              {sizes.map(s => {
+                const dims = Object.entries(s.dimensions || {}).filter(([k]) => k)
+                return (
+                  <div key={s.id} className={styles.sizeGroup}>
+                    <div className={styles.badge}>
+                      <span className={styles.badgeType}>{s.size_type}</span>
+                      {s.reference && <><span className={styles.badgeSep}>·</span><span>REF {s.reference}</span></>}
+                      {s.quantity > 0 && <><span className={styles.badgeSep}>·</span><span>{s.quantity} un</span></>}
+                    </div>
+                    {dims.length > 0 && (
+                      <div className={styles.dims}>
+                        {dims.map(([name, value]) => (
+                          <span key={name} className={styles.dim}>
+                            <span className={styles.dimLabel}>{name}</span>
+                            <span className={styles.dimVal}>{value}</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           )}
 
