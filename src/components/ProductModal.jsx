@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { uploadPattern } from '../lib/storage'
+import { uploadPattern, uploadColorImage } from '../lib/storage'
 import styles from './ProductModal.module.css'
 
 const SIZE_PRESETS = ['Solteiro', 'Casal', 'Queen', 'King', '2 Lugares', '3 Lugares']
@@ -66,21 +66,36 @@ function SizeTypeField({ value, onChange }) {
 }
 
 function ColorEntry({ c, i, onUpdate, onRemove }) {
-  const [uploading, setUploading] = useState(false)
-  const fileRef = useRef()
+  const [uploadingPattern, setUploadingPattern] = useState(false)
+  const [uploadingImg, setUploadingImg] = useState(false)
+  const patternRef = useRef()
+  const imgRef = useRef()
   const isPattern = c.type === 'pattern'
 
-  const handleFile = async (e) => {
+  const handlePatternFile = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
-    setUploading(true)
+    setUploadingPattern(true)
     try {
       const url = await uploadPattern(file)
       onUpdate(i, 'pattern_url', url)
     } catch (err) {
-      alert('Erro ao subir imagem: ' + err.message)
+      alert('Erro ao subir estampa: ' + err.message)
     }
-    setUploading(false)
+    setUploadingPattern(false)
+  }
+
+  const handleImgFile = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingImg(true)
+    try {
+      const url = await uploadColorImage(file)
+      onUpdate(i, 'image_url', url)
+    } catch (err) {
+      alert('Erro ao subir foto: ' + err.message)
+    }
+    setUploadingImg(false)
   }
 
   return (
@@ -111,16 +126,31 @@ function ColorEntry({ c, i, onUpdate, onRemove }) {
         </div>
       ) : (
         <div className="field">
-          <label>Imagem da Estampa</label>
+          <label>Imagem da Estampa <span className={styles.reqNote}>(bolinha)</span></label>
           <div className={styles.patternUpload}>
             {c.pattern_url && <img src={c.pattern_url} alt="Estampa" className={styles.patternPreview} />}
-            <button type="button" className={`btn btn-ghost btn-sm ${styles.uploadBtn}`} onClick={() => fileRef.current?.click()} disabled={uploading}>
-              {uploading ? 'Enviando...' : c.pattern_url ? 'Trocar imagem' : 'Selecionar imagem'}
+            <button type="button" className={`btn btn-ghost btn-sm ${styles.uploadBtn}`} onClick={() => patternRef.current?.click()} disabled={uploadingPattern}>
+              {uploadingPattern ? 'Enviando...' : c.pattern_url ? 'Trocar' : 'Selecionar'}
             </button>
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFile} />
+            <input ref={patternRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePatternFile} />
           </div>
         </div>
       )}
+
+      {/* Foto do produto nesta cor — obrigatória para todos */}
+      <div className="field">
+        <label>
+          Foto do produto nesta {isPattern ? 'estampa' : 'cor'}
+          <span className={styles.reqLabel}> *obrigatório</span>
+        </label>
+        <div className={styles.patternUpload}>
+          {c.image_url && <img src={c.image_url} alt="Foto da cor" className={styles.patternPreview} />}
+          <button type="button" className={`btn btn-ghost btn-sm ${styles.uploadBtn} ${!c.image_url ? styles.uploadRequired : ''}`} onClick={() => imgRef.current?.click()} disabled={uploadingImg}>
+            {uploadingImg ? 'Enviando...' : c.image_url ? 'Trocar foto' : 'Selecionar foto'}
+          </button>
+          <input ref={imgRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImgFile} />
+        </div>
+      </div>
 
       <button className="btn btn-danger btn-sm" style={{ marginTop: 8 }} onClick={() => onRemove(i)}>Remover</button>
     </div>
@@ -151,7 +181,7 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   )
 
   const [colors, setColors] = useState(
-    product?.colors?.map(c => ({ code: c.code, name: c.name, hex_color: c.hex_color || '#CCCCCC', pattern_url: c.pattern_url || '', type: c.pattern_url ? 'pattern' : 'solid' })) || []
+    product?.colors?.map(c => ({ code: c.code, name: c.name, hex_color: c.hex_color || '#CCCCCC', pattern_url: c.pattern_url || '', image_url: c.image_url || '', type: c.pattern_url ? 'pattern' : 'solid' })) || []
   )
 
   const [saving, setSaving] = useState(false)

@@ -47,3 +47,11 @@ CREATE POLICY "Auth delete patterns"
 
 -- Adiciona coluna visible (padrão: visível para todos)
 ALTER TABLE products ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT true;
+
+
+-- ============================================
+-- UPDATE V3.2 — Imagem por cor/estampa
+-- ============================================
+
+-- Foto do produto em cada cor/estampa (obrigatória para troca de imagem ao clicar)
+ALTER TABLE product_colors ADD COLUMN IF NOT EXISTS image_url TEXT;

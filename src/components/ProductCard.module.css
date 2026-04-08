@@ -52,6 +52,24 @@
 }
 .card:hover .imgCorner { opacity: 1; }
 
+/* Badge do nome da cor selecionada sobre a imagem */
+.colorBadge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(5, 5, 5, 0.78);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  color: var(--gold);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: var(--radius2);
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+
 /* ícone de zoom que aparece no hover */
 .zoomHint {
   position: absolute;

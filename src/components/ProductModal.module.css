@@ -70,6 +70,28 @@
   flex-shrink: 0;
 }
 
+/* ── Labels ───────────────────────────────── */
+.reqLabel {
+  color: rgba(201, 168, 76, 0.7);
+  font-size: 8px;
+  letter-spacing: 1px;
+  margin-left: 4px;
+}
+
+.reqNote {
+  color: var(--text2);
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  margin-left: 4px;
+  font-weight: 400;
+}
+
+/* Botão upload sem foto — destaque sutil */
+.uploadRequired {
+  border-color: rgba(201, 168, 76, 0.5) !important;
+  color: var(--gold) !important;
+}
+
 /* ── Pattern upload ───────────────────────── */
 .patternUpload {
   display: flex;

@@ -16,8 +16,15 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
   const { sizes = [], colors = [] } = product
   const [lightbox, setLightbox] = useState(false)
   const [toggling, setToggling] = useState(false)
+  const [selectedColorId, setSelectedColorId] = useState(null)
 
   const isVisible = product.visible !== false
+  const selectedColor = colors.find(c => c.id === selectedColorId) || null
+  const displaySrc = selectedColor?.image_url || product.image_url
+
+  const handleColorSelect = (id) => {
+    setSelectedColorId(prev => prev === id ? null : id)
+  }
 
   const handleToggle = async (e) => {
     e.stopPropagation()
@@ -37,16 +44,28 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
         whileHover={{ y: -6, transition: { duration: 0.3, ease: 'easeOut' } }}
       >
         <div className={styles.imgWrap} onClick={() => setLightbox(true)} title="Ver foto completa">
-          <img
-            className={styles.img}
-            src={getImageUrl(product.image_url)}
-            alt={product.title}
-            loading="lazy"
-            onError={e => { e.target.src = FALLBACK }}
-          />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.img
+              key={displaySrc}
+              className={styles.img}
+              src={getImageUrl(displaySrc)}
+              alt={product.title}
+              loading="lazy"
+              onError={e => { e.target.src = FALLBACK }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            />
+          </AnimatePresence>
           <div className={styles.imgOverlay} />
           <div className={styles.imgCorner} />
           <div className={styles.zoomHint}>⤢</div>
+          {selectedColor && (
+            <div className={styles.colorBadge}>
+              {selectedColor.code} — {selectedColor.name}
+            </div>
+          )}
         </div>
 
         <div className={styles.body}>
@@ -84,7 +103,15 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
           {colors.length > 0 && (
             <div className={styles.colors}>
               {colors.map(c => (
-                <ColorDot key={c.id} hex={c.hex_color} code={c.code} name={c.name} patternUrl={c.pattern_url} />
+                <ColorDot
+                  key={c.id}
+                  hex={c.hex_color}
+                  code={c.code}
+                  name={c.name}
+                  patternUrl={c.pattern_url}
+                  isSelected={selectedColorId === c.id}
+                  onSelect={() => handleColorSelect(c.id)}
+                />
               ))}
             </div>
           )}
@@ -128,8 +155,8 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
       <AnimatePresence>
         {lightbox && (
           <Lightbox
-            src={product.image_url}
-            alt={product.title}
+            src={displaySrc}
+            alt={selectedColor ? `${product.title} — ${selectedColor.name}` : product.title}
             onClose={() => setLightbox(false)}
           />
         )}
