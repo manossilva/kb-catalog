@@ -10,22 +10,22 @@
 }
 
 .dot:hover {
-  transform: scale(1.35);
-  box-shadow: 0 0 8px rgba(201, 168, 76, 0.4);
-  border-color: rgba(201, 168, 76, 0.5);
-  z-index: 2;
+  transform: scale(1.45);
+  box-shadow: 0 0 10px rgba(201, 168, 76, 0.5);
+  border-color: rgba(201, 168, 76, 0.6);
+  z-index: 10;
 }
 
-/* pattern dots get a slightly larger base */
+/* estampas também como círculos */
 .pattern {
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
+  border-radius: 50%;
+  background-size: cover !important;
+  background-position: center !important;
 }
 
 .tooltip {
   position: absolute;
-  bottom: 30px;
+  bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
   background: var(--bg3);
@@ -36,9 +36,15 @@
   white-space: nowrap;
   pointer-events: none;
   border: 1px solid var(--border2);
-  display: none;
-  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  z-index: 100;
   letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-.dot:hover .tooltip { display: block; }
+.dot:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+}

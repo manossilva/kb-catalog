@@ -41,6 +41,18 @@ export default function Lightbox({ src, alt, onClose }) {
         </motion.div>
 
         <motion.button
+          className={styles.backBtn}
+          onClick={onClose}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.15 }}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          ← Voltar
+        </motion.button>
+
+        <motion.button
           className={styles.closeBtn}
           onClick={onClose}
           initial={{ opacity: 0, y: -10 }}

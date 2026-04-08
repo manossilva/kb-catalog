@@ -52,6 +52,34 @@
   text-transform: uppercase;
 }
 
+/* Botão voltar */
+.backBtn {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(10, 10, 10, 0.9);
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  z-index: 201;
+  transition: border-color 0.2s, background 0.2s;
+  backdrop-filter: blur(8px);
+}
+
+.backBtn:hover {
+  border-color: var(--gold);
+  background: rgba(201, 168, 76, 0.12);
+}
+
 /* Botão fechar */
 .closeBtn {
   position: fixed;
@@ -70,6 +98,7 @@
   cursor: pointer;
   z-index: 201;
   transition: border-color 0.2s, background 0.2s;
+  backdrop-filter: blur(8px);
 }
 
 .closeBtn:hover {
@@ -87,4 +116,5 @@
   }
   .img { max-height: 100vh; }
   .closeBtn { top: 12px; right: 12px; }
+  .backBtn { top: 12px; left: 12px; font-size: 12px; padding: 0 14px; }
 }
