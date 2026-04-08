@@ -47,6 +47,21 @@
 
 .label { position: relative; z-index: 1; }
 
+.deleteBtn {
+  position: relative;
+  z-index: 2;
+  margin-left: 4px;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text2);
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  padding: 0 2px;
+}
+
+.tab:hover .deleteBtn { opacity: 1; }
+.deleteBtn:hover { color: var(--danger) !important; }
+
 .border {
   height: 1px;
   margin: 0 48px;

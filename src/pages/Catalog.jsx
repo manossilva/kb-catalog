@@ -1,18 +1,19 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Header from '../components/Header'
 import Tabs from '../components/Tabs'
 import ProductCard from '../components/ProductCard'
 import SkeletonCard from '../components/SkeletonCard'
-import ProductModal from '../components/ProductModal'
-import LoginModal from '../components/LoginModal'
-import ConfirmDialog from '../components/ConfirmDialog'
 import GoldenLoader from '../components/GoldenLoader'
 import styles from './Catalog.module.css'
 
+const ProductModal = lazy(() => import('../components/ProductModal'))
+const LoginModal   = lazy(() => import('../components/LoginModal'))
+const ConfirmDialog = lazy(() => import('../components/ConfirmDialog'))
+
 const SKELETON_COUNT = 8
 
-export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, createSection }) {
+export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, createSection, deleteSection }) {
   const [activeTab, setActiveTab] = useState('all')
   const [showLogin, setShowLogin] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -60,7 +61,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
         onNewProduct={handleNew}
       />
 
-      <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} />
+      <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} isAdmin={!!user} onDeleteSection={deleteSection} />
 
       {/* Skeleton — mostra enquanto carrega sem bloquear */}
       {loading ? (
@@ -112,27 +113,29 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
         </AnimatePresence>
       )}
 
-      <AnimatePresence>
-        {showLogin && (
-          <LoginModal onClose={() => setShowLogin(false)} onLogin={handleLogin} />
-        )}
-        {showForm && (
-          <ProductModal
-            product={editProduct}
-            sections={sections}
-            onClose={() => setShowForm(false)}
-            onSave={handleSave}
-            onCreateSection={createSection}
-          />
-        )}
-        {deleteId && (
-          <ConfirmDialog
-            message="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
-            onConfirm={handleConfirmDelete}
-            onCancel={() => setDeleteId(null)}
-          />
-        )}
-      </AnimatePresence>
+      <Suspense fallback={null}>
+        <AnimatePresence>
+          {showLogin && (
+            <LoginModal onClose={() => setShowLogin(false)} onLogin={handleLogin} />
+          )}
+          {showForm && (
+            <ProductModal
+              product={editProduct}
+              sections={sections}
+              onClose={() => setShowForm(false)}
+              onSave={handleSave}
+              onCreateSection={createSection}
+            />
+          )}
+          {deleteId && (
+            <ConfirmDialog
+              message="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
+              onConfirm={handleConfirmDelete}
+              onCancel={() => setDeleteId(null)}
+            />
+          )}
+        </AnimatePresence>
+      </Suspense>
     </div>
   )
 }

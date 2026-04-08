@@ -10,7 +10,7 @@ export function useSections() {
     const { data, error } = await supabase
       .from('sections')
       .select('*')
-      .order('name')          // ordem alfabética no banco
+      .order('name')
     if (!error) setSections(data || [])
     setLoading(false)
   }, [])
@@ -20,7 +20,7 @@ export function useSections() {
   const createSection = useCallback(async (name) => {
     const slug = name
       .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')   // remove acentos
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '')
     const { data, error } = await supabase
@@ -32,5 +32,14 @@ export function useSections() {
     return data[0]
   }, [load])
 
-  return { sections, loading, reload: load, createSection }
+  const deleteSection = useCallback(async (id) => {
+    const { error } = await supabase
+      .from('sections')
+      .delete()
+      .eq('id', id)
+    if (error) throw error
+    await load()
+  }, [load])
+
+  return { sections, loading, reload: load, createSection, deleteSection }
 }
