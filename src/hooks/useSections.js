@@ -32,6 +32,20 @@ export function useSections() {
     return data[0]
   }, [load])
 
+  const updateSection = useCallback(async (id, name) => {
+    const slug = name
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+    const { error } = await supabase
+      .from('sections')
+      .update({ name: name.trim(), slug })
+      .eq('id', id)
+    if (error) throw error
+    await load()
+  }, [load])
+
   const deleteSection = useCallback(async (id) => {
     const { error } = await supabase
       .from('sections')
@@ -41,5 +55,5 @@ export function useSections() {
     await load()
   }, [load])
 
-  return { sections, loading, reload: load, createSection, deleteSection }
+  return { sections, loading, reload: load, createSection, updateSection, deleteSection }
 }

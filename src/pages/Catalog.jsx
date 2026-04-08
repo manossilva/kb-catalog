@@ -13,7 +13,7 @@ const ConfirmDialog = lazy(() => import('../components/ConfirmDialog'))
 
 const SKELETON_COUNT = 8
 
-export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, createSection, deleteSection }) {
+export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, createSection, updateSection, deleteSection }) {
   const [activeTab, setActiveTab] = useState('all')
   const [showLogin, setShowLogin] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -61,7 +61,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
         onNewProduct={handleNew}
       />
 
-      <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} isAdmin={!!user} onDeleteSection={deleteSection} />
+      <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} isAdmin={!!user} onDeleteSection={deleteSection} onUpdateSection={updateSection} />
 
       {/* Skeleton — mostra enquanto carrega sem bloquear */}
       {loading ? (
