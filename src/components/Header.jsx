@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import styles from './Header.module.css'
 
-const LOGO_URL = import.meta.env.VITE_LOGO_URL
+const LOGO_URL = import.meta.env.VITE_LOGO_URL || '/logo.png'
 
 export default function Header({ user, onLogin, onLogout, onNewProduct }) {
   return (
