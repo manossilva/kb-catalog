@@ -29,8 +29,14 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
   const imgPriority = index === 0 ? 'high' : isAboveFold ? 'auto' : 'low'
 
   const handleColorSelect = (id) => {
-    setImgLoaded(false)
-    setSelectedColorId(prev => prev === id ? null : id)
+    // Só reseta o estado de carregado se a imagem vai de fato mudar.
+    // Cores sem image_url caem para product.image_url (mesma src) —
+    // nesse caso o onLoad nunca dispara de novo e a imagem ficaria invisível.
+    const nextId    = selectedColorId === id ? null : id
+    const nextColor = colors.find(c => c.id === nextId) || null
+    const nextSrc   = nextColor?.image_url || product.image_url
+    if (nextSrc !== displaySrc) setImgLoaded(false)
+    setSelectedColorId(nextId)
   }
 
   const handleToggle = async (e) => {
