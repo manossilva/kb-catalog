@@ -22,11 +22,10 @@ export function getImageUrl(url, width = 800) {
   if (lh3Match) return `https://lh3.googleusercontent.com/d/${lh3Match[1]}=w${width}`
 
   // ── Supabase Storage ──────────────────────────────────────────────────────
-  // Troca /object/ por /render/image/ para ativar o resize nativo do Supabase
-  if (url.includes('.supabase.co/storage/v1/object/public/')) {
+  // Serve direto — as imagens já chegam comprimidas em WebP pelo Canvas no upload.
+  // O endpoint /render/image/ só existe no plano Pro; no free retorna 400.
+  if (url.includes('.supabase.co/storage/')) {
     return url
-      .replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')
-      + `?width=${width}&quality=80&format=webp`
   }
 
   return url
