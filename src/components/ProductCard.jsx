@@ -17,12 +17,19 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
   const [lightbox, setLightbox] = useState(false)
   const [toggling, setToggling] = useState(false)
   const [selectedColorId, setSelectedColorId] = useState(null)
+  const [imgLoaded, setImgLoaded] = useState(false)
 
   const isVisible = product.visible !== false
   const selectedColor = colors.find(c => c.id === selectedColorId) || null
   const displaySrc = selectedColor?.image_url || product.image_url
 
+  // Primeiros 4 cards carregam com prioridade; o resto é lazy
+  const isAboveFold = index < 4
+  const imgLoading  = isAboveFold ? 'eager' : 'lazy'
+  const imgPriority = index === 0 ? 'high' : isAboveFold ? 'auto' : 'low'
+
   const handleColorSelect = (id) => {
+    setImgLoaded(false)
     setSelectedColorId(prev => prev === id ? null : id)
   }
 
@@ -44,18 +51,24 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
         whileHover={{ y: -6, transition: { duration: 0.3, ease: 'easeOut' } }}
       >
         <div className={styles.imgWrap} onClick={() => setLightbox(true)} title="Ver foto completa">
-          <AnimatePresence mode="wait" initial={false}>
+          {/* Shimmer enquanto carrega */}
+          {!imgLoaded && <div className={`${styles.imgShimmer} skeleton`} />}
+
+          <AnimatePresence mode="sync" initial={false}>
             <motion.img
               key={displaySrc}
               className={styles.img}
-              src={getImageUrl(displaySrc)}
+              src={getImageUrl(displaySrc, 700)}
               alt={product.title}
-              loading="lazy"
-              onError={e => { e.target.src = FALLBACK }}
+              loading={imgLoading}
+              fetchpriority={imgPriority}
+              decoding="async"
+              onLoad={() => setImgLoaded(true)}
+              onError={e => { e.target.src = FALLBACK; setImgLoaded(true) }}
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={{ opacity: imgLoaded ? 1 : 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.25 }}
             />
           </AnimatePresence>
           <div className={styles.imgOverlay} />

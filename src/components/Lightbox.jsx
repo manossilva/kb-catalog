@@ -58,7 +58,7 @@ export default function Lightbox({ src, alt, onClose }) {
           transition={{ type: 'spring', stiffness: 320, damping: 28 }}
         >
           <img
-            src={getImageUrl(src)}
+            src={getImageUrl(src, 1400)}
             alt={alt}
             className={styles.img}
             onError={e => { e.target.style.opacity = 0.3 }}

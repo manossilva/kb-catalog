@@ -33,6 +33,15 @@
 }
 .card:hover .img { transform: scale(1.04); }
 
+/* Shimmer que ocupa o mesmo espaço da imagem enquanto carrega */
+.imgShimmer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  z-index: 1;
+}
+
 .imgOverlay {
   position: absolute;
   inset: 0;
