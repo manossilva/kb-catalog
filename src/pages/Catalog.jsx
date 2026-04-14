@@ -13,6 +13,11 @@ const ConfirmDialog = lazy(() => import('../components/ConfirmDialog'))
 
 const SKELETON_COUNT = 8
 
+function isCortina(product, sections) {
+  const section = sections.find(s => s.id === product.section_id)
+  return !!section?.name?.toLowerCase().includes('cortina')
+}
+
 export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, toggleVisibility, createSection, updateSection, deleteSection }) {
   const [activeTab, setActiveTab] = useState('all')
   const [showLogin, setShowLogin] = useState(false)
@@ -109,6 +114,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
                   onDelete={setDeleteId}
                   onToggleVisibility={toggleVisibility}
                   index={i}
+                  isTall={isCortina(p, sections)}
                 />
               ))}
             </motion.div>
