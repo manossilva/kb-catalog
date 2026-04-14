@@ -6,12 +6,11 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(6, 8, 16, 0.92);
+  background: var(--header-bg);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   border-bottom: 1px solid rgba(201, 168, 76, 0.12);
-  /* Faixa dourada muito sutil na base */
-  box-shadow: 0 1px 0 rgba(201, 168, 76, 0.07), 0 4px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 0 rgba(201, 168, 76, 0.07), 0 4px 24px rgba(0, 0, 0, 0.3);
 }
 
 .logoWrap {
@@ -48,20 +47,57 @@
   );
 }
 
+/* ── Actions ─────────────────────────────── */
 .actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
 }
 
+/* ── Botão de tema (sol / lua) ──────────── */
+.themeBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.25s, color 0.25s, background 0.25s;
+  flex-shrink: 0;
+}
+.themeBtn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(201, 168, 76, 0.07);
+}
+
+/* ── "Novo Produto" — texto completo/curto ─ */
+.newBtn { position: relative; }
+.newBtnShort { display: none; }
+.newBtnFull  { display: inline; }
+
+/* ── Responsive ─────────────────────────── */
 @media (max-width: 768px) {
   .header { padding: 16px 24px; }
   .logo { font-size: 17px; letter-spacing: 3px; }
   .logoImg { height: 64px; }
 }
 
-@media (max-width: 480px) {
-  .header { padding: 13px 16px; }
-  .logo { font-size: 14px; letter-spacing: 2px; }
-  .logoImg { height: 56px; }
+@media (max-width: 540px) {
+  .header { padding: 12px 16px; gap: 8px; }
+  .logoImg { height: 52px; }
+  .actions { gap: 6px; }
+  /* No mobile com admin logado, o botão "Novo Produto" vira só "+" */
+  .newBtnFull  { display: none; }
+  .newBtnShort { display: inline; }
+}
+
+@media (max-width: 380px) {
+  .header { padding: 10px 12px; }
+  .logoImg { height: 44px; }
+  .themeBtn { width: 30px; height: 30px; }
 }

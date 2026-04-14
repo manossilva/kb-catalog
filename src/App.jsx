@@ -1,12 +1,14 @@
 import { useAuth } from './hooks/useAuth'
 import { useSections } from './hooks/useSections'
 import { useProducts } from './hooks/useProducts'
+import { useTheme } from './hooks/useTheme'
 import Catalog from './pages/Catalog'
 
 export default function App() {
   const { user, loading: authLoading, signIn, signOut } = useAuth()
   const { sections, createSection, updateSection, deleteSection } = useSections()
   const { products, loading: prodLoading, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct } = useProducts()
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <Catalog
@@ -24,6 +26,8 @@ export default function App() {
       createSection={createSection}
       updateSection={updateSection}
       deleteSection={deleteSection}
+      theme={theme}
+      toggleTheme={toggleTheme}
     />
   )
 }

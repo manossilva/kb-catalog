@@ -5,8 +5,10 @@
 }
 
 /* ── Background decorativo ────────────────────
-   Inspirado nas embalagens KB Supreme:
-   arcos dourados nos cantos + vinheta central.
+   Arcos concêntricos nos cantos (inspirado nas
+   embalagens KB Supreme) + vinheta central.
+   Cores via CSS vars — mudam automaticamente
+   entre tema escuro e claro.
 ──────────────────────────────────────────────*/
 .bgLayer {
   position: fixed;
@@ -16,10 +18,7 @@
   overflow: hidden;
 }
 
-/* ── Arco superior esquerdo ─────────────────
-   Círculo enorme posicionado fora da tela —
-   apenas o arco da borda fica visível.
-──────────────────────────────────────────── */
+/* ── Arco superior esquerdo ───────────────── */
 .bgGlow1 {
   position: absolute;
   top: -14vw;
@@ -27,7 +26,7 @@
   width: 54vw;
   height: 54vw;
   border-radius: 50%;
-  border: 1px solid rgba(201, 168, 76, 0.32);
+  border: 1px solid var(--arc1);
   background: none;
 }
 
@@ -39,7 +38,7 @@
   width: 122%;
   height: 122%;
   border-radius: 50%;
-  border: 1px solid rgba(201, 168, 76, 0.18);
+  border: 1px solid var(--arc2);
 }
 
 .bgGlow1::after {
@@ -50,10 +49,10 @@
   width: 144%;
   height: 144%;
   border-radius: 50%;
-  border: 1px solid rgba(201, 168, 76, 0.09);
+  border: 1px solid var(--arc3);
 }
 
-/* ── Arco inferior direito ──────────────────*/
+/* ── Arco inferior direito ────────────────── */
 .bgGlow2 {
   position: absolute;
   bottom: -14vw;
@@ -61,7 +60,7 @@
   width: 50vw;
   height: 50vw;
   border-radius: 50%;
-  border: 1px solid rgba(201, 168, 76, 0.26);
+  border: 1px solid var(--arc4);
   background: none;
 }
 
@@ -73,7 +72,7 @@
   width: 122%;
   height: 122%;
   border-radius: 50%;
-  border: 1px solid rgba(201, 168, 76, 0.15);
+  border: 1px solid var(--arc5);
 }
 
 .bgGlow2::after {
@@ -84,10 +83,10 @@
   width: 144%;
   height: 144%;
   border-radius: 50%;
-  border: 1px solid rgba(201, 168, 76, 0.07);
+  border: 1px solid var(--arc6);
 }
 
-/* ── Vinheta central (efeito mais escuro no meio) */
+/* ── Vinheta central ──────────────────────── */
 .bgGlow3 {
   position: absolute;
   inset: 0;
@@ -96,7 +95,7 @@
   border-radius: 0;
   background: radial-gradient(
     ellipse 72% 65% at 50% 44%,
-    rgba(2, 3, 12, 0.58) 0%,
+    var(--vignette-color) 0%,
     transparent 68%
   );
 }
@@ -110,7 +109,7 @@
   font-size: clamp(180px, 30vw, 420px);
   font-weight: 800;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(201, 168, 76, 0.045);
+  -webkit-text-stroke: 1px var(--arc3);
   letter-spacing: -10px;
   line-height: 1;
   user-select: none;
@@ -121,14 +120,14 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(201, 168, 76, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(201, 168, 76, 0.022) 1px, transparent 1px);
+    linear-gradient(var(--arc3) 1px, transparent 1px),
+    linear-gradient(90deg, var(--arc3) 1px, transparent 1px);
   background-size: 80px 80px;
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
 }
 
-/* ── Grid ─────────────────────────────────────*/
+/* ── Grid de produtos ─────────────────────── */
 .grid {
   position: relative;
   z-index: 1;
@@ -162,7 +161,7 @@
   }
 }
 
-/* ── States ───────────────────────────────────*/
+/* ── Estado vazio ─────────────────────────── */
 .empty {
   position: relative;
   z-index: 1;

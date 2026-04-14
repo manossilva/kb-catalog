@@ -7,12 +7,23 @@
   cursor: default;
 }
 
+[data-theme="light"] .card {
+  border-color: rgba(154, 110, 24, 0.12);
+}
+
 .card:hover {
   border-color: rgba(201, 168, 76, 0.38);
   box-shadow:
     0 24px 64px rgba(0, 0, 0, 0.7),
     0 0 0 1px rgba(201, 168, 76, 0.08),
     inset 0 1px 0 rgba(201, 168, 76, 0.08);
+}
+
+[data-theme="light"] .card:hover {
+  border-color: rgba(154, 110, 24, 0.35);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(154, 110, 24, 0.08);
 }
 
 /* ── Image ────────────────────────────────── */
@@ -24,7 +35,6 @@
   aspect-ratio: 4 / 3;
 }
 
-/* Cortinas — retrato para mostrar o produto completo */
 .imgWrapTall {
   aspect-ratio: 2 / 3;
 }
@@ -41,7 +51,6 @@
 }
 .card:hover .img { transform: scale(1.04); }
 
-/* Shimmer que ocupa o mesmo espaço da imagem enquanto carrega */
 .imgShimmer {
   position: absolute;
   inset: 0;
@@ -67,7 +76,6 @@
 }
 .card:hover .imgCorner { opacity: 1; }
 
-/* Badge do nome da cor selecionada sobre a imagem */
 .colorBadge {
   position: absolute;
   bottom: 10px;
@@ -85,7 +93,6 @@
   backdrop-filter: blur(6px);
 }
 
-/* ícone de zoom que aparece no hover */
 .zoomHint {
   position: absolute;
   top: 10px;
@@ -124,7 +131,7 @@
   font-size: 19px;
   font-weight: 400;
   margin-bottom: 5px;
-  color: #FFFFFF;
+  color: var(--text);
   letter-spacing: 0.3px;
   line-height: 1.3;
 }
@@ -161,7 +168,6 @@
 .badgeType { color: var(--gold); font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; }
 .badgeSep  { color: var(--border2); }
 
-/* ── Sizes ────────────────────────────────── */
 .sizeGroup {
   display: flex;
   flex-direction: column;
@@ -183,15 +189,8 @@
   color: var(--text2);
 }
 
-.dimLabel {
-  color: var(--text2);
-  letter-spacing: 0.5px;
-}
-
-.dimVal {
-  color: var(--text);
-  font-weight: 600;
-}
+.dimLabel { color: var(--text2); letter-spacing: 0.5px; }
+.dimVal   { color: var(--text); font-weight: 600; }
 
 .dim + .dim::before {
   content: '·';
@@ -217,6 +216,10 @@
   border-top: 1px solid rgba(201, 168, 76, 0.08);
 }
 
+[data-theme="light"] .footer {
+  border-top-color: rgba(154, 110, 24, 0.1);
+}
+
 .video {
   display: inline-flex;
   align-items: center;
@@ -233,7 +236,13 @@
 .videoIcon { font-size: 8px; color: var(--gold); transition: transform 0.3s; }
 .video:hover .videoIcon { transform: scale(1.3); }
 
-.adminBtns { display: flex; gap: 5px; align-items: center; }
+/* ── Admin buttons ───────────────────────── */
+.adminBtns {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  flex-shrink: 0;
+}
 
 /* Botões de reordenação ← → */
 .moveBtn {
@@ -261,7 +270,7 @@
   cursor: not-allowed;
 }
 
-/* Card oculto — só admin vê, com visual esmaecido */
+/* Card oculto */
 .cardHidden {
   opacity: 0.4;
   border-style: dashed;
@@ -288,14 +297,39 @@
 .visibilityBtn:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
 .visibilityBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* ── Mobile tweaks ────────────────────────── */
+/* ══════════════════════════════════
+   MOBILE — tablets / smartphones
+══════════════════════════════════ */
+@media (max-width: 768px) {
+  .title { font-size: 17px; }
+}
+
 @media (max-width: 600px) {
   .body { padding: 12px 14px; }
-  .title { font-size: 16px; }
-  .comp { font-size: 9px; margin-bottom: 10px; }
+  .title { font-size: 15px; }
+  .comp { font-size: 9px; margin-bottom: 8px; }
   .badge { font-size: 9px; padding: 3px 7px; }
-  .sizes { gap: 4px; margin-bottom: 10px; }
-  .colors { gap: 7px; margin-bottom: 10px; }
-  .footer { padding-top: 10px; }
+  .sizes { gap: 4px; margin-bottom: 8px; }
+  .colors { gap: 6px; margin-bottom: 8px; }
+  .footer { padding-top: 8px; gap: 6px; }
   .video { font-size: 9px; }
+  .adminBtns { gap: 3px; }
+  .moveBtn { width: 26px; height: 26px; font-size: 12px; }
+  .visibilityBtn { width: 26px; height: 26px; }
+}
+
+/* Em telas muito pequenas, quebra os botões admin
+   em linha separada do vídeo, para não apertar */
+@media (max-width: 420px) {
+  .footer {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .adminBtns {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+  .moveBtn { width: 24px; height: 24px; font-size: 11px; }
+  .visibilityBtn { width: 24px; height: 24px; }
 }

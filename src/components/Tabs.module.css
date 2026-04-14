@@ -1,5 +1,5 @@
 .wrap {
-  background: rgba(6, 8, 16, 0.9);
+  background: var(--tabs-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   position: sticky;

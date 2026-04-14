@@ -2,6 +2,13 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
+    <!-- Aplica o tema salvo antes do React renderizar (evita flash) -->
+    <script>
+      try {
+        var t = localStorage.getItem('kb-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) {}
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KB Supreme — Catálogo</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
