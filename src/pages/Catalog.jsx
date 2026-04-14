@@ -27,9 +27,17 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
 
   // Admin vê todos; usuário comum só vê os visíveis
   const visible = user ? products : products.filter(p => p.visible !== false)
-  const filtered = activeTab === 'all'
+  const baseFiltered = activeTab === 'all'
     ? visible
     : visible.filter(p => p.section_id === activeTab)
+
+  // Na aba "Todos" agrupa cortinas juntas primeiro, depois os demais
+  const filtered = activeTab !== 'all'
+    ? baseFiltered
+    : [
+        ...baseFiltered.filter(p =>  isCortina(p, sections)),
+        ...baseFiltered.filter(p => !isCortina(p, sections)),
+      ]
 
   const handleLogin = async (email, password) => {
     await signIn(email, password)

@@ -15,10 +15,17 @@ export function useProducts() {
       supabase.from('product_colors').select('*').order('sort_order', { ascending: true }),
     ])
 
+    const parseCode = (code = '') => {
+      const n = parseInt(code, 10)
+      return isNaN(n) ? Infinity : n
+    }
+
     const prods = (prodRes.data || []).map(p => ({
       ...p,
       sizes: (sizeRes.data || []).filter(s => s.product_id === p.id),
-      colors: (colorRes.data || []).filter(c => c.product_id === p.id),
+      colors: (colorRes.data || [])
+        .filter(c => c.product_id === p.id)
+        .sort((a, b) => parseCode(a.code) - parseCode(b.code) || (a.code ?? '').localeCompare(b.code ?? '')),
     }))
 
     setProducts(prods)
