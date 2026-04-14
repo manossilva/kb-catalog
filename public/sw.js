@@ -1,13 +1,11 @@
-const CACHE = 'kb-img-v1'
+const CACHE = 'kb-img-v2'
 
-// Padrões de URL que devem ser cacheados
-const IMG_ORIGINS = [
-  'lh3.googleusercontent.com',
-  '.supabase.co',
-]
-
+// Só imagens estáticas — nunca chamadas REST/auth/realtime do Supabase
 function isImage(url) {
-  return IMG_ORIGINS.some(o => url.includes(o))
+  if (url.includes('lh3.googleusercontent.com')) return true
+  // Supabase Storage public object URLs: …/storage/v1/object/public/…
+  if (url.includes('.supabase.co/storage/v1/object/public/')) return true
+  return false
 }
 
 // Estratégia cache-first: serve do cache se disponível, senão busca e armazena

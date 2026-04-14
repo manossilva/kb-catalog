@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 export function useProducts() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const reloadTimer = useRef(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -11,7 +12,7 @@ export function useProducts() {
     const [prodRes, sizeRes, colorRes] = await Promise.all([
       supabase.from('products').select('*').order('created_at', { ascending: false }),
       supabase.from('product_sizes').select('*'),
-      supabase.from('product_colors').select('*'),
+      supabase.from('product_colors').select('*').order('sort_order', { ascending: true }),
     ])
 
     const prods = (prodRes.data || []).map(p => ({
@@ -23,6 +24,27 @@ export function useProducts() {
     setProducts(prods)
     setLoading(false)
   }, [])
+
+  // Realtime: re-carrega automaticamente quando qualquer tabela muda.
+  // Debounce de 400ms para agrupar múltiplos eventos de um mesmo save.
+  useEffect(() => {
+    const scheduleReload = () => {
+      clearTimeout(reloadTimer.current)
+      reloadTimer.current = setTimeout(load, 400)
+    }
+
+    const channel = supabase
+      .channel('catalog-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'product_sizes' }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'product_colors' }, scheduleReload)
+      .subscribe()
+
+    return () => {
+      clearTimeout(reloadTimer.current)
+      supabase.removeChannel(channel)
+    }
+  }, [load])
 
   useEffect(() => { load() }, [load])
 

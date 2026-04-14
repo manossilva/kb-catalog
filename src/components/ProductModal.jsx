@@ -65,7 +65,7 @@ function SizeTypeField({ value, onChange }) {
   )
 }
 
-function ColorEntry({ c, i, onUpdate, onRemove }) {
+function ColorEntry({ c, i, total, onUpdate, onRemove, onMoveUp, onMoveDown }) {
   const [uploadingPattern, setUploadingPattern] = useState(false)
   const [uploadingImg, setUploadingImg] = useState(false)
   const patternRef = useRef()
@@ -100,6 +100,15 @@ function ColorEntry({ c, i, onUpdate, onRemove }) {
 
   return (
     <div className="sub-section">
+      <div className={styles.colorEntryHeader}>
+        <span className={styles.colorEntryLabel}>
+          {isPattern ? 'Estampa' : 'Cor'} {i + 1}
+        </span>
+        <div className={styles.orderBtns}>
+          <button type="button" className={styles.orderBtn} onClick={onMoveUp} disabled={i === 0} title="Mover para cima">↑</button>
+          <button type="button" className={styles.orderBtn} onClick={onMoveDown} disabled={i === total - 1} title="Mover para baixo">↓</button>
+        </div>
+      </div>
       <div className="row">
         <div className="field">
           <label>Código</label>
@@ -202,6 +211,13 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   const addColor = () => setColors(c => [...c, { code: '', name: '', hex_color: '#CCCCCC', pattern_url: '', type: 'solid' }])
   const removeColor = i => setColors(c => c.filter((_, idx) => idx !== i))
   const updateColor = (i, k, v) => setColors(c => c.map((x, idx) => idx === i ? { ...x, [k]: v } : x))
+  const moveColor = (i, dir) => setColors(c => {
+    const next = [...c]
+    const swap = i + dir
+    if (swap < 0 || swap >= next.length) return c
+    ;[next[i], next[swap]] = [next[swap], next[i]]
+    return next
+  })
 
   const handleCreateSection = async () => {
     if (!newSectionName.trim()) return
@@ -224,10 +240,11 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
     }
     setSaving(true)
     try {
-      const cleanColors = colors.map(({ type, ...rest }) => ({
+      const cleanColors = colors.map(({ type, ...rest }, idx) => ({
         ...rest,
         hex_color: type === 'pattern' ? null : rest.hex_color,
         pattern_url: type === 'pattern' ? rest.pattern_url : null,
+        sort_order: idx,
       }))
       // converte [{ name, value }] → { name: value } antes de salvar
       const cleanSizes = sizes.map(({ dims, ...rest }) => ({
@@ -387,7 +404,16 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
             <button className="btn btn-ghost btn-sm" onClick={addColor}>+ Cor</button>
           </div>
           {colors.map((c, i) => (
-            <ColorEntry key={i} c={c} i={i} onUpdate={updateColor} onRemove={removeColor} />
+            <ColorEntry
+              key={i}
+              c={c}
+              i={i}
+              total={colors.length}
+              onUpdate={updateColor}
+              onRemove={removeColor}
+              onMoveUp={() => moveColor(i, -1)}
+              onMoveDown={() => moveColor(i, 1)}
+            />
           ))}
         </div>
 

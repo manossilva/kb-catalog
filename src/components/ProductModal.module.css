@@ -272,6 +272,45 @@
 
 .newSectionInput::placeholder { color: var(--text2); }
 
+/* ── Color entry header (label + order buttons) ── */
+.colorEntryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.colorEntryLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text2);
+}
+
+.orderBtns {
+  display: flex;
+  gap: 4px;
+}
+
+.orderBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius2);
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  line-height: 1;
+}
+.orderBtn:hover:not(:disabled) { color: var(--gold); border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.08); }
+.orderBtn:disabled { opacity: 0.25; cursor: not-allowed; }
+
 /* ── Footer ───────────────────────────────── */
 .footer {
   display: flex;
