@@ -5,8 +5,8 @@
 }
 
 /* ── Background decorativo ────────────────────
-   Posicionado fixed para cobrir toda a tela
-   sem afetar o fluxo de conteúdo.
+   Inspirado nas embalagens KB Supreme:
+   arcos dourados nos cantos + vinheta central.
 ──────────────────────────────────────────────*/
 .bgLayer {
   position: fixed;
@@ -16,48 +16,88 @@
   overflow: hidden;
 }
 
-/* Glow superior esquerdo */
+/* ── Arco superior esquerdo ─────────────────
+   Círculo enorme posicionado fora da tela —
+   apenas o arco da borda fica visível.
+──────────────────────────────────────────── */
 .bgGlow1 {
   position: absolute;
-  top: -20%;
-  left: -15%;
-  width: 60vw;
-  height: 60vw;
+  top: -14vw;
+  left: -14vw;
+  width: 54vw;
+  height: 54vw;
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(201, 168, 76, 0.06) 0%,
-    transparent 65%
-  );
+  border: 1px solid rgba(201, 168, 76, 0.32);
+  background: none;
 }
 
-/* Glow inferior direito */
+.bgGlow1::before {
+  content: '';
+  position: absolute;
+  top: -11%;
+  left: -11%;
+  width: 122%;
+  height: 122%;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.18);
+}
+
+.bgGlow1::after {
+  content: '';
+  position: absolute;
+  top: -22%;
+  left: -22%;
+  width: 144%;
+  height: 144%;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.09);
+}
+
+/* ── Arco inferior direito ──────────────────*/
 .bgGlow2 {
   position: absolute;
-  bottom: -25%;
-  right: -10%;
+  bottom: -14vw;
+  right: -14vw;
   width: 50vw;
   height: 50vw;
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(201, 168, 76, 0.05) 0%,
-    transparent 65%
-  );
+  border: 1px solid rgba(201, 168, 76, 0.26);
+  background: none;
 }
 
-/* Glow central suave */
+.bgGlow2::before {
+  content: '';
+  position: absolute;
+  top: -11%;
+  left: -11%;
+  width: 122%;
+  height: 122%;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+}
+
+.bgGlow2::after {
+  content: '';
+  position: absolute;
+  top: -22%;
+  left: -22%;
+  width: 144%;
+  height: 144%;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.07);
+}
+
+/* ── Vinheta central (efeito mais escuro no meio) */
 .bgGlow3 {
   position: absolute;
-  top: 35%;
-  left: 30%;
-  width: 40vw;
-  height: 40vw;
-  border-radius: 50%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
   background: radial-gradient(
-    circle,
-    rgba(201, 168, 76, 0.025) 0%,
-    transparent 70%
+    ellipse 72% 65% at 50% 44%,
+    rgba(2, 3, 12, 0.58) 0%,
+    transparent 68%
   );
 }
 
@@ -70,7 +110,7 @@
   font-size: clamp(180px, 30vw, 420px);
   font-weight: 800;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(201, 168, 76, 0.04);
+  -webkit-text-stroke: 1px rgba(201, 168, 76, 0.045);
   letter-spacing: -10px;
   line-height: 1;
   user-select: none;
@@ -81,8 +121,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(201, 168, 76, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(201, 168, 76, 0.025) 1px, transparent 1px);
+    linear-gradient(rgba(201, 168, 76, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 168, 76, 0.022) 1px, transparent 1px);
   background-size: 80px 80px;
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
@@ -94,13 +134,14 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2px;
+  gap: 12px;
   padding: 32px 48px;
 }
 
 @media (max-width: 1200px) {
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 10px;
     padding: 24px 32px;
   }
 }

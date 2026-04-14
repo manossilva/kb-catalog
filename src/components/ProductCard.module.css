@@ -2,17 +2,17 @@
   background: var(--bg2);
   border-radius: var(--radius);
   overflow: visible;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(201, 168, 76, 0.1);
   transition: border-color 0.4s ease, box-shadow 0.4s ease;
   cursor: default;
 }
 
 .card:hover {
-  border-color: rgba(201, 168, 76, 0.3);
+  border-color: rgba(201, 168, 76, 0.38);
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(201, 168, 76, 0.06),
-    inset 0 1px 0 rgba(201, 168, 76, 0.06);
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(201, 168, 76, 0.08),
+    inset 0 1px 0 rgba(201, 168, 76, 0.08);
 }
 
 /* ── Image ────────────────────────────────── */
@@ -51,7 +51,7 @@
 .imgOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 50%, rgba(5, 5, 5, 0.5) 100%);
+  background: linear-gradient(to bottom, transparent 45%, rgba(2, 3, 12, 0.6) 100%);
   pointer-events: none;
 }
 
@@ -61,7 +61,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, rgba(201, 168, 76, 0.6) 0%, rgba(201, 168, 76, 0.2) 50%, transparent 100%);
+  background: linear-gradient(90deg, rgba(201, 168, 76, 0.7) 0%, rgba(201, 168, 76, 0.2) 50%, transparent 100%);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -72,8 +72,8 @@
   position: absolute;
   bottom: 10px;
   left: 10px;
-  background: rgba(5, 5, 5, 0.78);
-  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(4, 5, 14, 0.82);
+  border: 1px solid rgba(201, 168, 76, 0.4);
   color: var(--gold);
   font-size: 9px;
   font-weight: 700;
@@ -93,8 +93,8 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(5, 5, 5, 0.75);
-  border: 1px solid rgba(201, 168, 76, 0.3);
+  background: rgba(4, 5, 14, 0.78);
+  border: 1px solid rgba(201, 168, 76, 0.35);
   color: var(--gold);
   font-size: 13px;
   display: flex;
@@ -116,7 +116,7 @@
 .topLine {
   height: 1px;
   margin-bottom: 14px;
-  background: linear-gradient(90deg, rgba(201, 168, 76, 0.18) 0%, transparent 80%);
+  background: linear-gradient(90deg, rgba(201, 168, 76, 0.22) 0%, transparent 80%);
 }
 
 .title {
@@ -124,7 +124,7 @@
   font-size: 19px;
   font-weight: 400;
   margin-bottom: 5px;
-  color: var(--text);
+  color: #FFFFFF;
   letter-spacing: 0.3px;
   line-height: 1.3;
 }
@@ -214,7 +214,7 @@
   align-items: center;
   justify-content: space-between;
   padding-top: 12px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(201, 168, 76, 0.08);
 }
 
 .video {
@@ -235,12 +235,39 @@
 
 .adminBtns { display: flex; gap: 5px; align-items: center; }
 
+/* Botões de reordenação ← → */
+.moveBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text2);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.moveBtn:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(201, 168, 76, 0.08);
+}
+.moveBtn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
 /* Card oculto — só admin vê, com visual esmaecido */
 .cardHidden {
-  opacity: 0.45;
+  opacity: 0.4;
   border-style: dashed;
+  border-color: rgba(201, 168, 76, 0.08);
 }
-.cardHidden:hover { opacity: 0.7; }
+.cardHidden:hover { opacity: 0.65; }
 
 /* Botão de visibilidade */
 .visibilityBtn {

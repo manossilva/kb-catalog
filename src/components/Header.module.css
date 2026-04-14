@@ -6,10 +6,12 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(5, 5, 5, 0.88);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border-bottom: 1px solid rgba(201, 168, 76, 0.07);
+  background: rgba(6, 8, 16, 0.92);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+  /* Faixa dourada muito sutil na base */
+  box-shadow: 0 1px 0 rgba(201, 168, 76, 0.07), 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 .logoWrap {
@@ -32,7 +34,7 @@
   width: auto;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 12px rgba(201, 168, 76, 0.45));
+  filter: drop-shadow(0 0 14px rgba(201, 168, 76, 0.5));
 }
 
 .logoLine {
@@ -41,7 +43,7 @@
   background: linear-gradient(
     90deg,
     var(--gold) 0%,
-    rgba(201, 168, 76, 0.35) 55%,
+    rgba(201, 168, 76, 0.3) 55%,
     transparent 100%
   );
 }

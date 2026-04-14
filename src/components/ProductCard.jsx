@@ -12,7 +12,7 @@ const cardVariants = {
   visible: { opacity: 1, y: 0 }
 }
 
-export default function ProductCard({ product, isAdmin, onEdit, onDelete, onToggleVisibility, index = 0, isTall = false }) {
+export default function ProductCard({ product, isAdmin, onEdit, onDelete, onToggleVisibility, onMoveLeft, onMoveRight, index = 0, isTall = false }) {
   const { sizes = [], colors = [] } = product
   const [lightbox, setLightbox] = useState(false)
   const [toggling, setToggling] = useState(false)
@@ -145,6 +145,18 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
 
             {isAdmin && (
               <div className={styles.adminBtns}>
+                <button
+                  className={styles.moveBtn}
+                  onClick={e => { e.stopPropagation(); onMoveLeft?.() }}
+                  disabled={!onMoveLeft}
+                  title="Mover para a esquerda"
+                >←</button>
+                <button
+                  className={styles.moveBtn}
+                  onClick={e => { e.stopPropagation(); onMoveRight?.() }}
+                  disabled={!onMoveRight}
+                  title="Mover para a direita"
+                >→</button>
                 <button
                   className={`${styles.visibilityBtn} ${isVisible ? styles.visOn : styles.visOff}`}
                   onClick={handleToggle}

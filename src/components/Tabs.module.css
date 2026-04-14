@@ -1,5 +1,7 @@
 .wrap {
-  background: var(--bg);
+  background: rgba(6, 8, 16, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   position: sticky;
   top: 67px;
   z-index: 40;
@@ -178,8 +180,8 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(201, 168, 76, 0.12) 30%,
-    rgba(201, 168, 76, 0.12) 70%,
+    rgba(201, 168, 76, 0.18) 30%,
+    rgba(201, 168, 76, 0.18) 70%,
     transparent 100%
   );
 }

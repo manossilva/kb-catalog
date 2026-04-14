@@ -10,7 +10,7 @@ export function useProducts() {
     setLoading(true)
 
     const [prodRes, sizeRes, colorRes] = await Promise.all([
-      supabase.from('products').select('*').order('created_at', { ascending: false }),
+      supabase.from('products').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: false }),
       supabase.from('product_sizes').select('*'),
       supabase.from('product_colors').select('*').order('sort_order', { ascending: true }),
     ])
@@ -55,10 +55,38 @@ export function useProducts() {
 
   useEffect(() => { load() }, [load])
 
+  const reorderProduct = useCallback(async (idA, sortOrderA, idB, sortOrderB) => {
+    // Optimistic update — troca imediata na UI
+    setProducts(ps => {
+      const updated = ps.map(p => {
+        if (p.id === idA) return { ...p, sort_order: sortOrderB }
+        if (p.id === idB) return { ...p, sort_order: sortOrderA }
+        return p
+      })
+      return updated.sort((x, y) => (x.sort_order ?? 0) - (y.sort_order ?? 0))
+    })
+
+    // Persiste no banco
+    const [resA, resB] = await Promise.all([
+      supabase.from('products').update({ sort_order: sortOrderB }).eq('id', idA),
+      supabase.from('products').update({ sort_order: sortOrderA }).eq('id', idB),
+    ])
+
+    if (resA.error || resB.error) await load()
+  }, [load])
+
   const createProduct = useCallback(async (product, sizes, colors) => {
+    // Novo produto aparece no final
+    const { data: maxData } = await supabase
+      .from('products')
+      .select('sort_order')
+      .order('sort_order', { ascending: false })
+      .limit(1)
+    const nextOrder = ((maxData?.[0]?.sort_order) ?? 0) + 10
+
     const { data, error } = await supabase
       .from('products')
-      .insert(product)
+      .insert({ ...product, sort_order: nextOrder })
       .select()
     if (error) throw error
 
@@ -127,5 +155,5 @@ export function useProducts() {
     setProducts(ps => ps.map(p => p.id === id ? { ...p, visible } : p))
   }, [])
 
-  return { products, loading, reload: load, createProduct, updateProduct, deleteProduct, toggleVisibility }
+  return { products, loading, reload: load, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct }
 }

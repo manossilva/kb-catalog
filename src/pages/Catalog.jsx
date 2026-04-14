@@ -18,7 +18,7 @@ function isCortina(product, sections) {
   return !!section?.name?.toLowerCase().includes('cortina')
 }
 
-export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, toggleVisibility, createSection, updateSection, deleteSection }) {
+export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct, createSection, updateSection, deleteSection }) {
   const [activeTab, setActiveTab] = useState('all')
   const [showLogin, setShowLogin] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -121,6 +121,12 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
                   onEdit={handleEdit}
                   onDelete={setDeleteId}
                   onToggleVisibility={toggleVisibility}
+                  onMoveLeft={user && i > 0
+                    ? () => reorderProduct(p.id, p.sort_order ?? i, filtered[i - 1].id, filtered[i - 1].sort_order ?? (i - 1))
+                    : null}
+                  onMoveRight={user && i < filtered.length - 1
+                    ? () => reorderProduct(p.id, p.sort_order ?? i, filtered[i + 1].id, filtered[i + 1].sort_order ?? (i + 1))
+                    : null}
                   index={i}
                   isTall={isCortina(p, sections)}
                 />
