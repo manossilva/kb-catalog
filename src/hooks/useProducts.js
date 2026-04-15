@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
+const BROADCAST_CHANNEL = 'catalog-updates'
+
 export function useProducts() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const reloadTimer = useRef(null)
+  const broadcastChRef = useRef(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -47,13 +50,30 @@ export function useProducts() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'product_colors' }, scheduleReload)
       .subscribe()
 
+    // Canal dedicado para broadcast (notificar clientes a recarregar)
+    const broadcastCh = supabase.channel(BROADCAST_CHANNEL).subscribe()
+    broadcastChRef.current = broadcastCh
+
     return () => {
       clearTimeout(reloadTimer.current)
       supabase.removeChannel(channel)
+      supabase.removeChannel(broadcastCh)
+      broadcastChRef.current = null
     }
   }, [load])
 
   useEffect(() => { load() }, [load])
+
+  // Envia broadcast para todos os clientes conectados recarregarem
+  const broadcastUpdate = useCallback(async () => {
+    try {
+      await broadcastChRef.current?.send({
+        type: 'broadcast',
+        event: 'catalog-updated',
+        payload: { ts: Date.now() },
+      })
+    } catch { /* ignora erros de broadcast */ }
+  }, [])
 
   const reorderProduct = useCallback(async (idA, sortOrderA, idB, sortOrderB) => {
     // Optimistic update — troca imediata na UI
@@ -76,7 +96,6 @@ export function useProducts() {
   }, [load])
 
   const createProduct = useCallback(async (product, sizes, colors) => {
-    // Novo produto aparece no final
     const { data: maxData } = await supabase
       .from('products')
       .select('sort_order')
@@ -107,8 +126,9 @@ export function useProducts() {
     }
 
     await load()
+    await broadcastUpdate()
     return productId
-  }, [load])
+  }, [load, broadcastUpdate])
 
   const updateProduct = useCallback(async (id, product, sizes, colors) => {
     const { error } = await supabase
@@ -117,7 +137,6 @@ export function useProducts() {
       .eq('id', id)
     if (error) throw error
 
-    // Replace sizes and colors (delete + insert)
     await supabase.from('product_sizes').delete().eq('product_id', id)
     await supabase.from('product_colors').delete().eq('product_id', id)
 
@@ -134,7 +153,8 @@ export function useProducts() {
     }
 
     await load()
-  }, [load])
+    await broadcastUpdate()
+  }, [load, broadcastUpdate])
 
   const deleteProduct = useCallback(async (id) => {
     const { error } = await supabase
@@ -143,7 +163,8 @@ export function useProducts() {
       .eq('id', id)
     if (error) throw error
     await load()
-  }, [load])
+    await broadcastUpdate()
+  }, [load, broadcastUpdate])
 
   const toggleVisibility = useCallback(async (id, visible) => {
     const { error } = await supabase
@@ -151,9 +172,9 @@ export function useProducts() {
       .update({ visible })
       .eq('id', id)
     if (error) throw error
-    // Atualiza local sem recarregar tudo
     setProducts(ps => ps.map(p => p.id === id ? { ...p, visible } : p))
-  }, [])
+    await broadcastUpdate()
+  }, [broadcastUpdate])
 
-  return { products, loading, reload: load, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct }
+  return { products, loading, reload: load, broadcastUpdate, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct }
 }

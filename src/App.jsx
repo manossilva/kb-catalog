@@ -5,15 +5,16 @@ import { useSections } from './hooks/useSections'
 import { useProducts } from './hooks/useProducts'
 import { useTheme } from './hooks/useTheme'
 import { getImageUrl } from './lib/imageUrl'
+import { supabase } from './lib/supabase'
 import Catalog from './pages/Catalog'
 import SplashScreen from './components/SplashScreen'
+
+const BROADCAST_CHANNEL = 'catalog-updates'
 
 // Quantas imagens pré-carregar em background durante a splash
 const PRELOAD_COUNT = 8
 
 // ── Cookie helpers ──────────────────────────────
-// Cookie com SameSite=Strict + Secure (em HTTPS) garante que
-// o token de "já visitou" não vaze em requests cross-site.
 function hasVisited() {
   try {
     if (document.cookie.split(';').some(c => c.trim().startsWith('kb-welcomed='))) return true
@@ -24,7 +25,6 @@ function hasVisited() {
 function markVisited() {
   try {
     const secure = location.protocol === 'https:' ? '; Secure' : ''
-    // Expira em 1 ano
     document.cookie = `kb-welcomed=1; max-age=31536000; SameSite=Strict; path=/${secure}`
     localStorage.setItem('kb-welcomed', '1')
   } catch { /* silencia em ambientes restritos */ }
@@ -34,15 +34,22 @@ function markVisited() {
 export default function App() {
   const { user, loading: authLoading, signIn, signOut } = useAuth()
   const { sections, createSection, updateSection, deleteSection } = useSections()
-  const { products, loading: prodLoading, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct } = useProducts()
+  const { products, loading: prodLoading, broadcastUpdate, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct } = useProducts()
   const { theme, toggleTheme } = useTheme()
 
-  // Mostra a splash apenas na primeira visita ao dispositivo
   const [showSplash, setShowSplash] = useState(() => !hasVisited())
 
-  // Pré-carrega as primeiras N imagens em background enquanto a splash está ativa.
-  // O navegador coloca no cache HTTP; quando os cards renderizarem, a imagem
-  // já está disponível localmente (zero latência de rede).
+  // Clientes não-admin: recarregam a página quando o admin publica mudanças
+  useEffect(() => {
+    if (user) return // admin não precisa recarregar — já tem dados frescos
+    const ch = supabase
+      .channel(BROADCAST_CHANNEL)
+      .on('broadcast', { event: 'catalog-updated' }, () => window.location.reload())
+      .subscribe()
+    return () => supabase.removeChannel(ch)
+  }, [user])
+
+  // Pré-carrega as primeiras N imagens em background enquanto a splash está ativa
   useEffect(() => {
     if (products.length === 0) return
     products.slice(0, PRELOAD_COUNT).forEach(p => {
@@ -50,7 +57,6 @@ export default function App() {
         const img = new Image()
         img.src = getImageUrl(p.image_url, 700)
       }
-      // Pré-carrega também as primeiras cores de cada produto
       p.colors?.slice(0, 3).forEach(c => {
         if (c.image_url) {
           const img = new Image()
@@ -76,6 +82,7 @@ export default function App() {
           <SplashScreen
             onEnter={handleEnter}
             productsReady={!prodLoading}
+            theme={theme}
           />
         )}
       </AnimatePresence>
@@ -97,6 +104,7 @@ export default function App() {
         deleteSection={deleteSection}
         theme={theme}
         toggleTheme={toggleTheme}
+        onForceRefresh={broadcastUpdate}
       />
     </>
   )

@@ -2,14 +2,16 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import styles from './SplashScreen.module.css'
 
-const LOGO_URL = import.meta.env.VITE_LOGO_URL || '/logo.png'
+const LOGO_DARK  = import.meta.env.VITE_LOGO_URL       || '/logo.png'
+const LOGO_LIGHT = import.meta.env.VITE_LOGO_LIGHT_URL || '/logo-light.png'
 
 // Tempo mínimo de exibição (deixa a animação terminar)
 const MIN_MS = 2600
 // Tempo máximo de espera (libera o botão mesmo com rede lenta)
 const MAX_MS = 7000
 
-export default function SplashScreen({ onEnter, productsReady }) {
+export default function SplashScreen({ onEnter, productsReady, theme }) {
+  const logoSrc = theme === 'light' ? LOGO_LIGHT : LOGO_DARK
   const [minPassed, setMinPassed] = useState(false)
   const [maxPassed, setMaxPassed] = useState(false)
 
@@ -37,7 +39,7 @@ export default function SplashScreen({ onEnter, productsReady }) {
       <div className={styles.content}>
         {/* Logo */}
         <motion.img
-          src={LOGO_URL}
+          src={logoSrc}
           alt="KB Supreme"
           className={styles.logo}
           initial={{ opacity: 0, scale: 0.72, y: 28 }}

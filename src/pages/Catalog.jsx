@@ -18,7 +18,7 @@ function isCortina(product, sections) {
   return !!section?.name?.toLowerCase().includes('cortina')
 }
 
-export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct, createSection, updateSection, deleteSection, theme, toggleTheme }) {
+export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct, createSection, updateSection, deleteSection, theme, toggleTheme, onForceRefresh }) {
   const [activeTab, setActiveTab] = useState('all')
   const [showLogin, setShowLogin] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -76,6 +76,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
         onNewProduct={handleNew}
         theme={theme}
         onToggleTheme={toggleTheme}
+        onForceRefresh={onForceRefresh}
       />
 
       <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} isAdmin={!!user} onDeleteSection={deleteSection} onUpdateSection={updateSection} />

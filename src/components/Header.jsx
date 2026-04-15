@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
 import styles from './Header.module.css'
 
-const LOGO_URL = import.meta.env.VITE_LOGO_URL || '/logo.png'
+const LOGO_DARK  = import.meta.env.VITE_LOGO_URL       || '/logo.png'
+const LOGO_LIGHT = import.meta.env.VITE_LOGO_LIGHT_URL || '/logo-light.png'
 
 function SunIcon() {
   return (
@@ -27,7 +28,9 @@ function MoonIcon() {
   )
 }
 
-export default function Header({ user, onLogin, onLogout, onNewProduct, theme, onToggleTheme }) {
+export default function Header({ user, onLogin, onLogout, onNewProduct, theme, onToggleTheme, onForceRefresh }) {
+  const logoSrc = theme === 'light' ? LOGO_LIGHT : LOGO_DARK
+
   return (
     <motion.header
       className={styles.header}
@@ -36,25 +39,14 @@ export default function Header({ user, onLogin, onLogout, onNewProduct, theme, o
       transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <div className={styles.logoWrap}>
-        {LOGO_URL ? (
-          <motion.img
-            src={LOGO_URL}
-            alt="KB Supreme"
-            className={styles.logoImg}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          />
-        ) : (
-          <motion.h1
-            className={styles.logo}
-            initial={{ opacity: 0, letterSpacing: '8px' }}
-            animate={{ opacity: 1, letterSpacing: '4px' }}
-            transition={{ duration: 1, delay: 0.2 }}
-          >
-            KB Supreme
-          </motion.h1>
-        )}
+        <motion.img
+          src={logoSrc}
+          alt="KB Supreme"
+          className={styles.logoImg}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+        />
         <div className={styles.logoLine} />
       </div>
 
@@ -78,6 +70,15 @@ export default function Header({ user, onLogin, onLogout, onNewProduct, theme, o
             >
               <span className={styles.newBtnFull}>+ Novo Produto</span>
               <span className={styles.newBtnShort}>+</span>
+            </motion.button>
+            <motion.button
+              className={`btn btn-ghost btn-sm ${styles.publishBtn}`}
+              onClick={onForceRefresh}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              title="Força todos os clientes a recarregarem o catálogo"
+            >
+              ↻ Publicar
             </motion.button>
             <motion.button
               className="btn btn-ghost btn-sm"
