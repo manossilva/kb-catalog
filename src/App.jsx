@@ -48,13 +48,17 @@ export default function App() {
     products.slice(0, PRELOAD_COUNT).forEach(p => {
       if (p.image_url) {
         const img = new Image()
-        img.src = getImageUrl(p.image_url)
+        img.src = getImageUrl(p.image_url, 700)
       }
       // Pré-carrega também as primeiras cores de cada produto
       p.colors?.slice(0, 3).forEach(c => {
         if (c.image_url) {
           const img = new Image()
-          img.src = getImageUrl(c.image_url)
+          img.src = getImageUrl(c.image_url, 700)
+        }
+        if (c.pattern_url) {
+          const img = new Image()
+          img.src = getImageUrl(c.pattern_url, 120)
         }
       })
     })

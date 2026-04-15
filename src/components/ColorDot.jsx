@@ -1,3 +1,4 @@
+import { getImageUrl } from '../lib/imageUrl'
 import styles from './ColorDot.module.css'
 
 export default function ColorDot({ hex, code, name, patternUrl, isSelected, onSelect }) {
@@ -8,7 +9,7 @@ export default function ColorDot({ hex, code, name, patternUrl, isSelected, onSe
       className={`${styles.dot} ${isPattern ? styles.pattern : ''} ${isSelected ? styles.selected : ''}`}
       style={
         isPattern
-          ? { backgroundImage: `url(${patternUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+          ? { backgroundImage: `url(${getImageUrl(patternUrl, 120)})`, backgroundSize: 'cover', backgroundPosition: 'center' }
           : { backgroundColor: hex }
       }
       onClick={onSelect}
