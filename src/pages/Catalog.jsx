@@ -24,6 +24,8 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
   const [showForm, setShowForm] = useState(false)
   const [editProduct, setEditProduct] = useState(null)
   const [deleteId, setDeleteId] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchSection, setSearchSection] = useState('all')
 
   // Admin vê todos; usuário comum só vê os visíveis
   const visible = user ? products : products.filter(p => p.visible !== false)
@@ -32,12 +34,23 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
     : visible.filter(p => p.section_id === activeTab)
 
   // Na aba "Todos" agrupa cortinas juntas primeiro, depois os demais
-  const filtered = activeTab !== 'all'
+  const sorted = activeTab !== 'all'
     ? baseFiltered
     : [
         ...baseFiltered.filter(p =>  isCortina(p, sections)),
         ...baseFiltered.filter(p => !isCortina(p, sections)),
       ]
+
+  // Filtra por seção da pesquisa e pelo texto (título ou referência)
+  const filtered = sorted.filter(p => {
+    const matchSection = searchSection === 'all' || p.section_id === searchSection
+    if (!matchSection) return false
+    const q = searchQuery.trim().toLowerCase()
+    if (!q) return true
+    const inTitle = p.title?.toLowerCase().includes(q)
+    const inRef = p.sizes?.some(s => s.reference?.toLowerCase().includes(q))
+    return inTitle || inRef
+  })
 
   const handleLogin = async (email, password) => {
     await signIn(email, password)
@@ -77,6 +90,11 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
         theme={theme}
         onToggleTheme={toggleTheme}
         onForceRefresh={onForceRefresh}
+        sections={sections}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchSection={searchSection}
+        onSearchSectionChange={setSearchSection}
       />
 
       <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} isAdmin={!!user} onDeleteSection={deleteSection} onUpdateSection={updateSection} />
@@ -109,7 +127,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
             </motion.div>
           ) : (
             <motion.div
-              key={activeTab}
+              key={`${activeTab}-${searchSection}-${searchQuery}`}
               className={styles.grid}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
