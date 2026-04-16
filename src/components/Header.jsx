@@ -1,8 +1,7 @@
 import { motion } from 'framer-motion'
 import styles from './Header.module.css'
 
-const LOGO_DARK  = import.meta.env.VITE_LOGO_URL       || '/logo.png'
-const LOGO_LIGHT = import.meta.env.VITE_LOGO_LIGHT_URL || '/logo-light.png'
+const LOGO_DARK  = import.meta.env.VITE_LOGO_URL || '/logo.png'
 
 function SunIcon() {
   return (
@@ -29,7 +28,7 @@ function MoonIcon() {
 }
 
 export default function Header({ user, onLogin, onLogout, onNewProduct, theme, onToggleTheme, onForceRefresh }) {
-  const logoSrc = theme === 'light' ? LOGO_LIGHT : LOGO_DARK
+  const logoSrc = LOGO_DARK
 
   return (
     <motion.header

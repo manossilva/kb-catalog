@@ -36,6 +36,12 @@
   filter: drop-shadow(0 0 14px rgba(201, 168, 76, 0.5));
 }
 
+:global([data-theme="light"]) .logoImg {
+  filter:
+    drop-shadow(0 0 10px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 2px 18px rgba(0, 0, 0, 0.3));
+}
+
 .logoLine {
   height: 1px;
   width: 100%;
