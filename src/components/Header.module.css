@@ -165,8 +165,16 @@
   min-width: 0;
 }
 
+:global([data-theme="light"]) .searchInput {
+  color: var(--gold);
+}
+
 .searchInput::placeholder {
   color: var(--text2, rgba(255,255,255,0.35));
+}
+
+:global([data-theme="light"]) .searchInput::placeholder {
+  color: rgba(201, 168, 76, 0.5);
 }
 
 .clearBtn {
