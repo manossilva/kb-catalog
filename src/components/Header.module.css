@@ -240,6 +240,9 @@
   .logo { font-size: 17px; letter-spacing: 3px; }
   .logoImg { height: 64px; }
 
+  /* Logo à esquerda, ações à direita */
+  .topRow { justify-content: space-between; }
+
   /* Oculta pesquisa na linha principal, exibe na linha mobile */
   .searchWrap { display: none; }
   .searchRowMobile { display: flex; }
