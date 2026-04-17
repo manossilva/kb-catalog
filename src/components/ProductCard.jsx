@@ -125,6 +125,7 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
                 <ColorDot
                   key={c.id}
                   hex={c.hex_color}
+                  hex2={c.hex_color_2 || null}
                   code={c.code}
                   name={c.name}
                   patternUrl={c.pattern_url}

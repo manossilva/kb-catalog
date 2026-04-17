@@ -71,6 +71,11 @@ function ColorEntry({ c, i, total, onUpdate, onRemove, onMoveUp, onMoveDown }) {
   const patternRef = useRef()
   const imgRef = useRef()
   const isPattern = c.type === 'pattern'
+  const hasSecond = !!c.hex_color_2
+
+  const toggleSecond = () => {
+    onUpdate(i, 'hex_color_2', hasSecond ? '' : '#CCCCCC')
+  }
 
   const handlePatternFile = async (e) => {
     const file = e.target.files?.[0]
@@ -126,13 +131,30 @@ function ColorEntry({ c, i, total, onUpdate, onRemove, onMoveUp, onMoveDown }) {
       </div>
 
       {!isPattern ? (
-        <div className="field">
-          <label>Cor HEX</label>
-          <div className={styles.colorPicker}>
-            <input type="color" value={c.hex_color || '#CCCCCC'} onChange={e => onUpdate(i, 'hex_color', e.target.value)} className={styles.colorInput} />
-            <input value={c.hex_color || ''} onChange={e => onUpdate(i, 'hex_color', e.target.value)} placeholder="#CCCCCC" style={{ flex: 1 }} />
+        <>
+          <div className="field">
+            <label>Cor HEX</label>
+            <div className={styles.colorPicker}>
+              <input type="color" value={c.hex_color || '#CCCCCC'} onChange={e => onUpdate(i, 'hex_color', e.target.value)} className={styles.colorInput} />
+              <input value={c.hex_color || ''} onChange={e => onUpdate(i, 'hex_color', e.target.value)} placeholder="#CCCCCC" style={{ flex: 1 }} />
+            </div>
           </div>
-        </div>
+
+          <label className={styles.secondColorToggle}>
+            <input type="checkbox" checked={hasSecond} onChange={toggleSecond} />
+            <span>Segunda cor</span>
+          </label>
+
+          {hasSecond && (
+            <div className="field">
+              <label>Segunda Cor HEX</label>
+              <div className={styles.colorPicker}>
+                <input type="color" value={c.hex_color_2 || '#CCCCCC'} onChange={e => onUpdate(i, 'hex_color_2', e.target.value)} className={styles.colorInput} />
+                <input value={c.hex_color_2 || ''} onChange={e => onUpdate(i, 'hex_color_2', e.target.value)} placeholder="#CCCCCC" style={{ flex: 1 }} />
+              </div>
+            </div>
+          )}
+        </>
       ) : (
         <div className="field">
           <label>Imagem da Estampa <span className={styles.reqNote}>(bolinha)</span></label>
@@ -190,7 +212,7 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   )
 
   const [colors, setColors] = useState(
-    product?.colors?.map(c => ({ code: c.code, name: c.name, hex_color: c.hex_color || '#CCCCCC', pattern_url: c.pattern_url || '', image_url: c.image_url || '', type: c.pattern_url ? 'pattern' : 'solid' })) || []
+    product?.colors?.map(c => ({ code: c.code, name: c.name, hex_color: c.hex_color || '#CCCCCC', hex_color_2: c.hex_color_2 || '', pattern_url: c.pattern_url || '', image_url: c.image_url || '', type: c.pattern_url ? 'pattern' : 'solid' })) || []
   )
 
   const [saving, setSaving] = useState(false)
@@ -208,7 +230,7 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   const removeDim = (si, di)      => setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: x.dims.filter((_, di2) => di2 !== di) } : x))
   const updateDim = (si, di, k, v) => setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: x.dims.map((d, di2) => di2 === di ? { ...d, [k]: v } : d) } : x))
 
-  const addColor = () => setColors(c => [...c, { code: '', name: '', hex_color: '#CCCCCC', pattern_url: '', type: 'solid' }])
+  const addColor = () => setColors(c => [...c, { code: '', name: '', hex_color: '#CCCCCC', hex_color_2: '', pattern_url: '', type: 'solid' }])
   const removeColor = i => setColors(c => c.filter((_, idx) => idx !== i))
   const updateColor = (i, k, v) => setColors(c => c.map((x, idx) => idx === i ? { ...x, [k]: v } : x))
   const moveColor = (i, dir) => setColors(c => {
@@ -243,6 +265,7 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
       const cleanColors = colors.map(({ type, ...rest }, idx) => ({
         ...rest,
         hex_color: type === 'pattern' ? null : rest.hex_color,
+        hex_color_2: type === 'pattern' ? null : (rest.hex_color_2 || null),
         pattern_url: type === 'pattern' ? rest.pattern_url : null,
         sort_order: idx,
       }))

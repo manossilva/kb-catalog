@@ -311,6 +311,25 @@
 .orderBtn:hover:not(:disabled) { color: var(--gold); border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.08); }
 .orderBtn:disabled { opacity: 0.25; cursor: not-allowed; }
 
+/* ── Segunda cor toggle ───────────────────── */
+.secondColorToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 12px;
+  color: var(--text2);
+}
+.secondColorToggle input[type="checkbox"] {
+  accent-color: var(--gold);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+.secondColorToggle:hover span { color: var(--gold); }
+
 /* ── Footer ───────────────────────────────── */
 .footer {
   display: flex;
