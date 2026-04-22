@@ -1,0 +1,250 @@
+/* ── Overlay ─────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* ── Panel ───────────────────────────────── */
+.panel {
+  background: var(--surface1);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 95vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  width: fit-content;
+  max-width: calc(100vw - 32px);
+}
+
+/* ── Header ──────────────────────────────── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text1);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 2px;
+}
+
+.closeBtn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: border-color 0.2s, color 0.2s;
+}
+.closeBtn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── Hint ────────────────────────────────── */
+.hint {
+  font-size: 11px;
+  color: var(--text2);
+  margin: -8px 0 0;
+  text-align: center;
+}
+
+/* ── Crop area wrapper (handles mobile scale) */
+.cropWrap {
+  display: flex;
+  justify-content: center;
+  /* On small screens we scale the crop area down */
+  --scale: min(1, calc((100vw - 64px) / var(--cw)));
+  width: calc(var(--cw) * var(--scale));
+  height: calc(var(--ch) * var(--scale));
+  overflow: hidden;
+  border-radius: 8px;
+  align-self: center;
+}
+
+.cropArea {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  background: #111;
+  flex-shrink: 0;
+  /* Scale down on mobile */
+  transform-origin: top left;
+  transform: scale(min(1, calc((100vw - 64px) / 480)));
+}
+
+.grabbing { cursor: grabbing; }
+
+/* ── Imagem dentro da área ───────────────── */
+.cropImg {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* ── Grid overlay (rule of thirds) ─────── */
+.gridOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.gridH,
+.gridV {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.gridH {
+  left: 0; right: 0;
+  height: 1px;
+}
+
+.gridV {
+  top: 0; bottom: 0;
+  width: 1px;
+}
+
+/* ── Marcadores de canto ─────────────────── */
+.corner {
+  position: absolute;
+  z-index: 3;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.corner::before,
+.corner::after {
+  content: '';
+  position: absolute;
+  background: var(--gold);
+  border-radius: 1px;
+}
+
+/* Horizontal arm */
+.corner::before { height: 2px; width: 18px; }
+/* Vertical arm */
+.corner::after  { width: 2px; height: 18px; }
+
+.tl { top: 8px; left: 8px; }
+.tl::before { top: 0; left: 0; }
+.tl::after  { top: 0; left: 0; }
+
+.tr { top: 8px; right: 8px; }
+.tr::before { top: 0; right: 0; left: auto; }
+.tr::after  { top: 0; right: 0; left: auto; }
+
+.bl { bottom: 8px; left: 8px; }
+.bl::before { bottom: 0; top: auto; left: 0; }
+.bl::after  { bottom: 0; top: auto; left: 0; }
+
+.br { bottom: 8px; right: 8px; }
+.br::before { bottom: 0; top: auto; right: 0; left: auto; }
+.br::after  { bottom: 0; top: auto; right: 0; left: auto; }
+
+/* ── Rótulo proporção ────────────────────── */
+.ratioTag {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(201, 168, 76, 0.7);
+  letter-spacing: 1px;
+  pointer-events: none;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ── Erro ────────────────────────────────── */
+.errMsg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text2);
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 24px;
+  z-index: 4;
+}
+
+/* ── Controles de zoom ───────────────────── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.zoomIcon {
+  font-size: 18px;
+  color: var(--text2);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+}
+
+.slider {
+  flex: 1;
+  accent-color: var(--gold);
+  height: 4px;
+  cursor: pointer;
+}
+
+.zoomPct {
+  font-size: 11px;
+  color: var(--text2);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ── Footer ──────────────────────────────── */
+.footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Mobile ──────────────────────────────── */
+@media (max-width: 540px) {
+  .panel { padding: 16px; gap: 12px; }
+  .hint { font-size: 10px; }
+  .controls { gap: 6px; }
+}

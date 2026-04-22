@@ -70,3 +70,6 @@ export const uploadPattern = (file) => uploadToPatterns(file, 'patterns')
 
 // Foto do produto em uma cor ou estampa específica
 export const uploadColorImage = (file) => uploadToPatterns(file, 'color-images')
+
+// Imagem cortada pelo editor (qualquer tipo)
+export const uploadCroppedImage = (file) => uploadToPatterns(file, 'cropped')

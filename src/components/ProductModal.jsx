@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { uploadPattern, uploadColorImage } from '../lib/storage'
+import { motion, AnimatePresence } from 'framer-motion'
+import { uploadPattern, uploadColorImage, uploadCroppedImage } from '../lib/storage'
+import ImageEditor from './ImageEditor'
 import styles from './ProductModal.module.css'
 
 const SIZE_PRESETS = ['Solteiro', 'Casal', 'Queen', 'King', '2 Lugares', '3 Lugares']
@@ -65,7 +66,7 @@ function SizeTypeField({ value, onChange }) {
   )
 }
 
-function ColorEntry({ c, i, total, onUpdate, onRemove, onMoveUp, onMoveDown }) {
+function ColorEntry({ c, i, total, onUpdate, onRemove, onMoveUp, onMoveDown, onOpenEditor }) {
   const [uploadingPattern, setUploadingPattern] = useState(false)
   const [uploadingImg, setUploadingImg] = useState(false)
   const patternRef = useRef()
@@ -163,6 +164,12 @@ function ColorEntry({ c, i, total, onUpdate, onRemove, onMoveUp, onMoveDown }) {
             <button type="button" className={`btn btn-ghost btn-sm ${styles.uploadBtn}`} onClick={() => patternRef.current?.click()} disabled={uploadingPattern}>
               {uploadingPattern ? 'Enviando...' : c.pattern_url ? 'Trocar' : 'Selecionar'}
             </button>
+            {c.pattern_url && (
+              <button type="button" className={`btn btn-ghost btn-sm ${styles.editImgBtn}`}
+                onClick={() => onOpenEditor(c.pattern_url, 1, `Estampa ${i + 1}`, url => onUpdate(i, 'pattern_url', url))}>
+                ✂ Editar
+              </button>
+            )}
             <input ref={patternRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePatternFile} />
           </div>
         </div>
@@ -179,6 +186,12 @@ function ColorEntry({ c, i, total, onUpdate, onRemove, onMoveUp, onMoveDown }) {
           <button type="button" className={`btn btn-ghost btn-sm ${styles.uploadBtn} ${!c.image_url ? styles.uploadRequired : ''}`} onClick={() => imgRef.current?.click()} disabled={uploadingImg}>
             {uploadingImg ? 'Enviando...' : c.image_url ? 'Trocar foto' : 'Selecionar foto'}
           </button>
+          {c.image_url && (
+            <button type="button" className={`btn btn-ghost btn-sm ${styles.editImgBtn}`}
+              onClick={() => onOpenEditor(c.image_url, 4 / 3, `Foto — ${isPattern ? 'Estampa' : 'Cor'} ${i + 1}`, url => onUpdate(i, 'image_url', url))}>
+              ✂ Editar
+            </button>
+          )}
           <input ref={imgRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImgFile} />
         </div>
       </div>
@@ -219,8 +232,24 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   const [newSectionName, setNewSectionName] = useState('')
   const [creatingSection, setCreatingSection] = useState(false)
   const [showNewSection, setShowNewSection] = useState(false)
+  const [editingImg, setEditingImg] = useState(null) // { src, aspectRatio, label, onDone }
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  const openEditor = (src, aspectRatio, label, onDone) => {
+    if (!src) return
+    setEditingImg({ src, aspectRatio, label, onDone })
+  }
+
+  const handleEditorConfirm = async (file) => {
+    const url = await uploadCroppedImage(file)
+    editingImg.onDone(url)
+    setEditingImg(null)
+  }
+
+  // Proporção da imagem principal depende da seção (cortina = retrato, demais = paisagem)
+  const mainAspectRatio = sections.find(s => s.id === form.section_id)
+    ?.name?.toLowerCase().includes('cortina') ? 2 / 3 : 4 / 3
 
   const addSize    = () => setSizes(s => [...s, { size_type: '', reference: '', quantity: 0, dims: [] }])
   const removeSize = i  => setSizes(s => s.filter((_, idx) => idx !== i))
@@ -285,6 +314,7 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   }
 
   return (
+    <>
     <motion.div className="modal-overlay" onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
       <motion.div className="modal" onClick={e => e.stopPropagation()} initial={{ opacity: 0, y: 40, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20 }} transition={{ type: 'spring', stiffness: 380, damping: 30 }}>
         <h2>{isEdit ? 'Editar Produto' : 'Novo Produto'}</h2>
@@ -342,7 +372,15 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
 
         <div className="field">
           <label>URL da Imagem</label>
-          <input value={form.image_url} onChange={e => set('image_url', e.target.value)} placeholder="https://..." />
+          <div className={styles.imgFieldRow}>
+            <input value={form.image_url} onChange={e => set('image_url', e.target.value)} placeholder="https://..." style={{ flex: 1 }} />
+            {form.image_url && (
+              <button type="button" className={`btn btn-ghost btn-sm ${styles.editImgBtn}`}
+                onClick={() => openEditor(form.image_url, mainAspectRatio, 'Imagem principal', url => set('image_url', url))}>
+                ✂ Editar
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="field">
@@ -436,6 +474,7 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
               onRemove={removeColor}
               onMoveUp={() => moveColor(i, -1)}
               onMoveDown={() => moveColor(i, 1)}
+              onOpenEditor={openEditor}
             />
           ))}
         </div>
@@ -448,5 +487,19 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
         </div>
       </motion.div>
     </motion.div>
+
+    <AnimatePresence>
+      {editingImg && (
+        <ImageEditor
+          key="img-editor"
+          src={editingImg.src}
+          aspectRatio={editingImg.aspectRatio}
+          label={editingImg.label}
+          onConfirm={handleEditorConfirm}
+          onClose={() => setEditingImg(null)}
+        />
+      )}
+    </AnimatePresence>
+    </>
   )
 }
