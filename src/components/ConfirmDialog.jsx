@@ -1,7 +1,14 @@
 import { motion } from 'framer-motion'
 import styles from './ConfirmDialog.module.css'
 
-export default function ConfirmDialog({ message, onConfirm, onCancel }) {
+export default function ConfirmDialog({
+  message,
+  onConfirm,
+  onCancel,
+  confirmLabel = 'Excluir',
+  cancelLabel = 'Cancelar',
+  confirmVariant = 'btn-danger',
+}) {
   return (
     <motion.div
       className="modal-overlay"
@@ -22,8 +29,8 @@ export default function ConfirmDialog({ message, onConfirm, onCancel }) {
         <div className={styles.icon}>◈</div>
         <p className={styles.msg}>{message}</p>
         <div className={styles.actions}>
-          <button className="btn btn-ghost" onClick={onCancel}>Cancelar</button>
-          <button className="btn btn-danger" onClick={onConfirm}>Excluir</button>
+          <button className="btn btn-ghost" onClick={onCancel}>{cancelLabel}</button>
+          <button className={`btn ${confirmVariant}`} onClick={onConfirm}>{confirmLabel}</button>
         </div>
       </motion.div>
     </motion.div>

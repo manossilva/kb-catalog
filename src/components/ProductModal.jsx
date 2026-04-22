@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { uploadPattern, uploadColorImage, uploadCroppedImage } from '../lib/storage'
 import ImageEditor from './ImageEditor'
+import ConfirmDialog from './ConfirmDialog'
 import styles from './ProductModal.module.css'
 
 const SIZE_PRESETS = ['Solteiro', 'Casal', 'Queen', 'King', '2 Lugares', '3 Lugares']
@@ -232,9 +233,18 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   const [newSectionName, setNewSectionName] = useState('')
   const [creatingSection, setCreatingSection] = useState(false)
   const [showNewSection, setShowNewSection] = useState(false)
-  const [editingImg, setEditingImg] = useState(null) // { src, aspectRatio, label, onDone }
+  const [editingImg, setEditingImg] = useState(null)
+  const [showDiscard, setShowDiscard] = useState(false)
+  const dirtyRef = useRef(false)
 
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+  const markDirty = () => { dirtyRef.current = true }
+
+  const tryClose = () => {
+    if (dirtyRef.current) setShowDiscard(true)
+    else onClose()
+  }
+
+  const set = (k, v) => { markDirty(); setForm(f => ({ ...f, [k]: v })) }
 
   const openEditor = (src, aspectRatio, label, onDone) => {
     if (!src) return
@@ -251,24 +261,24 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   const mainAspectRatio = sections.find(s => s.id === form.section_id)
     ?.name?.toLowerCase().includes('cortina') ? 2 / 3 : 4 / 3
 
-  const addSize    = () => setSizes(s => [...s, { size_type: '', reference: '', quantity: 0, dims: [] }])
-  const removeSize = i  => setSizes(s => s.filter((_, idx) => idx !== i))
-  const updateSize = (i, k, v) => setSizes(s => s.map((x, idx) => idx === i ? { ...x, [k]: v } : x))
+  const addSize    = () => { markDirty(); setSizes(s => [...s, { size_type: '', reference: '', quantity: 0, dims: [] }]) }
+  const removeSize = i  => { markDirty(); setSizes(s => s.filter((_, idx) => idx !== i)) }
+  const updateSize = (i, k, v) => { markDirty(); setSizes(s => s.map((x, idx) => idx === i ? { ...x, [k]: v } : x)) }
 
-  const addDim    = (si)          => setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: [...x.dims, { name: '', value: '' }] } : x))
-  const removeDim = (si, di)      => setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: x.dims.filter((_, di2) => di2 !== di) } : x))
-  const updateDim = (si, di, k, v) => setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: x.dims.map((d, di2) => di2 === di ? { ...d, [k]: v } : d) } : x))
+  const addDim    = (si)           => { markDirty(); setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: [...x.dims, { name: '', value: '' }] } : x)) }
+  const removeDim = (si, di)       => { markDirty(); setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: x.dims.filter((_, di2) => di2 !== di) } : x)) }
+  const updateDim = (si, di, k, v) => { markDirty(); setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: x.dims.map((d, di2) => di2 === di ? { ...d, [k]: v } : d) } : x)) }
 
-  const addColor = () => setColors(c => [...c, { code: '', name: '', hex_color: '#CCCCCC', hex_color_2: '', pattern_url: '', type: 'solid' }])
-  const removeColor = i => setColors(c => c.filter((_, idx) => idx !== i))
-  const updateColor = (i, k, v) => setColors(c => c.map((x, idx) => idx === i ? { ...x, [k]: v } : x))
-  const moveColor = (i, dir) => setColors(c => {
+  const addColor = () => { markDirty(); setColors(c => [...c, { code: '', name: '', hex_color: '#CCCCCC', hex_color_2: '', pattern_url: '', type: 'solid' }]) }
+  const removeColor = i => { markDirty(); setColors(c => c.filter((_, idx) => idx !== i)) }
+  const updateColor = (i, k, v) => { markDirty(); setColors(c => c.map((x, idx) => idx === i ? { ...x, [k]: v } : x)) }
+  const moveColor = (i, dir) => { markDirty(); setColors(c => {
     const next = [...c]
     const swap = i + dir
     if (swap < 0 || swap >= next.length) return c
     ;[next[i], next[swap]] = [next[swap], next[i]]
     return next
-  })
+  }) }
 
   const handleCreateSection = async () => {
     if (!newSectionName.trim()) return
@@ -315,7 +325,7 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
 
   return (
     <>
-    <motion.div className="modal-overlay" onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
+    <motion.div className="modal-overlay" onClick={tryClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
       <motion.div className="modal" onClick={e => e.stopPropagation()} initial={{ opacity: 0, y: 40, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20 }} transition={{ type: 'spring', stiffness: 380, damping: 30 }}>
         <h2>{isEdit ? 'Editar Produto' : 'Novo Produto'}</h2>
 
@@ -480,7 +490,7 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
         </div>
 
         <div className={styles.footer}>
-          <button className="btn btn-ghost" onClick={onClose}>Cancelar</button>
+          <button className="btn btn-ghost" onClick={tryClose}>Cancelar</button>
           <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
             {saving ? 'Salvando...' : isEdit ? 'Salvar Alterações' : 'Criar Produto'}
           </button>
@@ -497,6 +507,17 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
           label={editingImg.label}
           onConfirm={handleEditorConfirm}
           onClose={() => setEditingImg(null)}
+        />
+      )}
+      {showDiscard && (
+        <ConfirmDialog
+          key="discard-dialog"
+          message="Descartar as alterações? Todas as mudanças feitas serão perdidas."
+          confirmLabel="Descartar"
+          cancelLabel="Continuar editando"
+          confirmVariant="btn-danger"
+          onConfirm={onClose}
+          onCancel={() => setShowDiscard(false)}
         />
       )}
     </AnimatePresence>

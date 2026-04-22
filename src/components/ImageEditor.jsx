@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import ConfirmDialog from './ConfirmDialog'
 import styles from './ImageEditor.module.css'
 
 const OUTPUT_WIDTH = 1200
@@ -37,6 +38,14 @@ export default function ImageEditor({ src, aspectRatio = 4 / 3, label = '', onCo
   const [dragging, setDragging] = useState(false)
   const [saving, setSaving] = useState(false)
   const [imgError, setImgError] = useState(false)
+  const [showDiscard, setShowDiscard] = useState(false)
+
+  const isDirty = zoom !== 1 || offset.x !== 0 || offset.y !== 0
+
+  const tryClose = () => {
+    if (isDirty) setShowDiscard(true)
+    else onClose()
+  }
 
   // Reset when src changes
   useEffect(() => {
@@ -169,9 +178,10 @@ export default function ImageEditor({ src, aspectRatio = 4 / 3, label = '', onCo
   const ratioLabel = aspectRatio === 1 ? '1:1' : aspectRatio > 1 ? '4:3' : '2:3'
 
   return (
+    <>
     <motion.div
       className={styles.overlay}
-      onClick={onClose}
+      onClick={tryClose}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -190,7 +200,7 @@ export default function ImageEditor({ src, aspectRatio = 4 / 3, label = '', onCo
             <h3 className={styles.title}>Editar Imagem</h3>
             {label && <span className={styles.subtitle}>{label}</span>}
           </div>
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Fechar">✕</button>
+          <button className={styles.closeBtn} onClick={tryClose} aria-label="Fechar">✕</button>
         </div>
 
         <p className={styles.hint}>Arraste para reposicionar · Scroll ou pinça para zoom</p>
@@ -263,7 +273,7 @@ export default function ImageEditor({ src, aspectRatio = 4 / 3, label = '', onCo
 
         {/* ── Footer ── */}
         <div className={styles.footer}>
-          <button className="btn btn-ghost" onClick={onClose}>Cancelar</button>
+          <button className="btn btn-ghost" onClick={tryClose}>Cancelar</button>
           <button
             className="btn btn-primary"
             onClick={handleConfirm}
@@ -274,5 +284,19 @@ export default function ImageEditor({ src, aspectRatio = 4 / 3, label = '', onCo
         </div>
       </motion.div>
     </motion.div>
+
+    <AnimatePresence>
+      {showDiscard && (
+        <ConfirmDialog
+          message="Descartar as alterações de corte? As mudanças feitas serão perdidas."
+          confirmLabel="Descartar"
+          cancelLabel="Continuar editando"
+          confirmVariant="btn-danger"
+          onConfirm={onClose}
+          onCancel={() => setShowDiscard(false)}
+        />
+      )}
+    </AnimatePresence>
+    </>
   )
 }
