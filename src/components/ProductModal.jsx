@@ -202,7 +202,7 @@ function ColorEntry({ c, i, total, onUpdate, onRemove, onMoveUp, onMoveDown, onO
   )
 }
 
-export default function ProductModal({ product, sections, onClose, onSave, onCreateSection }) {
+export default function ProductModal({ product, sections, onClose, onSave, onCreateSection, getAR }) {
   const isEdit = !!product?.id
 
   const sortedSections = [...sections].sort((a, b) => a.name.localeCompare(b.name))
@@ -257,9 +257,10 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
     setEditingImg(null)
   }
 
-  // Proporção da imagem principal depende da seção (cortina = retrato, demais = paisagem)
-  const mainAspectRatio = sections.find(s => s.id === form.section_id)
-    ?.name?.toLowerCase().includes('cortina') ? 2 / 3 : 4 / 3
+  const currentSection = sections.find(s => s.id === form.section_id)
+  const mainAspectRatio = getAR
+    ? (getAR(form.section_id, currentSection?.name) === 'tall' ? 2 / 3 : 1)
+    : (currentSection?.name?.toLowerCase().includes('cortina') ? 2 / 3 : 1)
 
   const addSize    = () => { markDirty(); setSizes(s => [...s, { size_type: '', reference: '', quantity: 0, dims: [] }]) }
   const removeSize = i  => { markDirty(); setSizes(s => s.filter((_, idx) => idx !== i)) }

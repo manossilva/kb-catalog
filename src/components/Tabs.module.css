@@ -111,6 +111,8 @@
 .dropItem:hover { background: rgba(255,255,255,0.05); }
 .dropDanger { color: var(--danger); }
 .dropDanger:hover { background: rgba(192, 57, 43, 0.1); }
+.dropActive { color: var(--gold); }
+.dropActive:hover { color: var(--gold); background: rgba(201, 168, 76, 0.08); }
 
 .dropSep {
   height: 1px;

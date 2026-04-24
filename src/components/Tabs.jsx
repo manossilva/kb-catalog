@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import styles from './Tabs.module.css'
 
-function SectionMenu({ section, onEdit, onDelete }) {
+function SectionMenu({ section, arRatio, onARChange, onEdit, onDelete }) {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(section.name)
@@ -111,6 +111,19 @@ function SectionMenu({ section, onEdit, onDelete }) {
                 <span>✏</span> Renomear
               </button>
               <div className={styles.dropSep} />
+              <button
+                className={`${styles.dropItem} ${arRatio === 'square' ? styles.dropActive : ''}`}
+                onClick={(e) => { e.stopPropagation(); onARChange(section.id, 'square'); setOpen(false) }}
+              >
+                <span>⬜</span> Foto 1:1 (quadrada)
+              </button>
+              <button
+                className={`${styles.dropItem} ${arRatio === 'tall' ? styles.dropActive : ''}`}
+                onClick={(e) => { e.stopPropagation(); onARChange(section.id, 'tall'); setOpen(false) }}
+              >
+                <span>▯</span> Foto 2:3 (retrato)
+              </button>
+              <div className={styles.dropSep} />
               <button className={`${styles.dropItem} ${styles.dropDanger}`} onClick={handleDelete}>
                 <span>🗑</span> Excluir
               </button>
@@ -123,7 +136,7 @@ function SectionMenu({ section, onEdit, onDelete }) {
   )
 }
 
-export default function Tabs({ sections, activeTab, onTabChange, isAdmin, onDeleteSection, onUpdateSection }) {
+export default function Tabs({ sections, activeTab, onTabChange, isAdmin, onDeleteSection, onUpdateSection, getAR, onUpdateSectionAR }) {
   const sorted = [...sections].sort((a, b) => a.name.localeCompare(b.name))
   const tabs = [{ id: 'all', name: 'Todos', fixed: true }, ...sorted]
 
@@ -148,6 +161,8 @@ export default function Tabs({ sections, activeTab, onTabChange, isAdmin, onDele
             {isAdmin && !t.fixed && (
               <SectionMenu
                 section={t}
+                arRatio={getAR(t.id, t.name)}
+                onARChange={onUpdateSectionAR}
                 onEdit={onUpdateSection}
                 onDelete={onDeleteSection}
               />

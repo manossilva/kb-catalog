@@ -12,7 +12,7 @@ const cardVariants = {
   visible: { opacity: 1, y: 0 }
 }
 
-export default function ProductCard({ product, isAdmin, onEdit, onDelete, onToggleVisibility, onMoveLeft, onMoveRight, index = 0, isTall = false }) {
+export default function ProductCard({ product, isAdmin, onEdit, onDelete, onToggleVisibility, onMoveLeft, onMoveRight, index = 0, aspectRatio = 'square' }) {
   const { sizes = [], colors = [] } = product
   const [lightbox, setLightbox] = useState(false)
   const [toggling, setToggling] = useState(false)
@@ -56,7 +56,7 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
         transition={{ duration: 0.5, delay: index * 0.07, ease: [0.25, 0.46, 0.45, 0.94] }}
         whileHover={{ y: -6, transition: { duration: 0.3, ease: 'easeOut' } }}
       >
-        <div className={`${styles.imgWrap} ${isTall ? styles.imgWrapTall : ''}`} onClick={() => setLightbox(true)} title="Ver foto completa">
+        <div className={`${styles.imgWrap} ${aspectRatio === 'tall' ? styles.imgWrapTall : ''}`} onClick={() => setLightbox(true)} title="Ver foto completa">
           {/* Shimmer enquanto carrega */}
           {!imgLoaded && <div className={`${styles.imgShimmer} skeleton`} />}
 

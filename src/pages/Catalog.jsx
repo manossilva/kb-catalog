@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense } from 'react'
+import { useSectionARConfig } from '../hooks/useSectionARConfig'
 import { motion, AnimatePresence } from 'framer-motion'
 import Header from '../components/Header'
 import Tabs from '../components/Tabs'
@@ -19,6 +20,7 @@ function isCortina(product, sections) {
 }
 
 export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct, createSection, updateSection, deleteSection, theme, toggleTheme, onForceRefresh }) {
+  const { getAR, setAR } = useSectionARConfig()
   const [activeTab, setActiveTab] = useState('all')
   const [showLogin, setShowLogin] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -97,7 +99,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
         onSearchSectionChange={setSearchSection}
       />
 
-      <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} isAdmin={!!user} onDeleteSection={deleteSection} onUpdateSection={updateSection} />
+      <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} isAdmin={!!user} onDeleteSection={deleteSection} onUpdateSection={updateSection} getAR={getAR} onUpdateSectionAR={setAR} />
 
       {/* Skeleton — mostra enquanto carrega sem bloquear */}
       {loading ? (
@@ -149,7 +151,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
                     ? () => reorderProduct(p.id, p.sort_order ?? i, filtered[i + 1].id, filtered[i + 1].sort_order ?? (i + 1))
                     : null}
                   index={i}
-                  isTall={isCortina(p, sections)}
+                  aspectRatio={getAR(p.section_id, sections.find(s => s.id === p.section_id)?.name)}
                 />
               ))}
             </motion.div>
@@ -169,6 +171,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
               onClose={() => setShowForm(false)}
               onSave={handleSave}
               onCreateSection={createSection}
+              getAR={getAR}
             />
           )}
           {deleteId && (
