@@ -63,6 +63,7 @@ export default function Lightbox({ src, alt, onClose }) {
             className={styles.img}
             onError={e => { e.target.style.opacity = 0.3 }}
           />
+          <img src="/logo.png" alt="" className={styles.watermark} draggable={false} aria-hidden="true" />
           <div className={styles.topBar}>
             <span className={styles.label}>{alt}</span>
           </div>

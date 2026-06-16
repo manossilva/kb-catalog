@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense } from 'react'
-import { useSectionARConfig } from '../hooks/useSectionARConfig'
+import { getDefaultAR } from '../lib/sectionConfig'
 import { motion, AnimatePresence } from 'framer-motion'
 import Header from '../components/Header'
 import Tabs from '../components/Tabs'
@@ -19,8 +19,11 @@ function isCortina(product, sections) {
   return !!section?.name?.toLowerCase().includes('cortina')
 }
 
-export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct, createSection, updateSection, deleteSection, theme, toggleTheme, onForceRefresh }) {
-  const { getAR, setAR } = useSectionARConfig()
+export default function Catalog({ user, sections, products, loading, signIn, signOut, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct, createSection, updateSection, deleteSection, updateSectionAR, reorderSection, theme, toggleTheme, onForceRefresh }) {
+  const getAR = (sectionId, sectionName) => {
+    const section = sections.find(s => s.id === sectionId)
+    return section?.ar_ratio ?? getDefaultAR(sectionName)
+  }
   const [activeTab, setActiveTab] = useState('all')
   const [showLogin, setShowLogin] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -99,7 +102,7 @@ export default function Catalog({ user, sections, products, loading, signIn, sig
         onSearchSectionChange={setSearchSection}
       />
 
-      <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} isAdmin={!!user} onDeleteSection={deleteSection} onUpdateSection={updateSection} getAR={getAR} onUpdateSectionAR={setAR} />
+      <Tabs sections={sections} activeTab={activeTab} onTabChange={setActiveTab} isAdmin={!!user} onDeleteSection={deleteSection} onUpdateSection={updateSection} getAR={getAR} onUpdateSectionAR={updateSectionAR} onReorderSection={reorderSection} />
 
       {/* Skeleton — mostra enquanto carrega sem bloquear */}
       {loading ? (

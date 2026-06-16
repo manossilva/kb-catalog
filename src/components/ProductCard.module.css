@@ -57,6 +57,22 @@
   z-index: 1;
 }
 
+.watermark {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 42%;
+  max-width: 115px;
+  min-width: 52px;
+  object-fit: contain;
+  opacity: 0.22;
+  pointer-events: none;
+  user-select: none;
+  filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(0, 0, 0, 0.55));
+  z-index: 3;
+}
+
 .imgOverlay {
   position: absolute;
   inset: 0;
@@ -206,6 +222,11 @@
   margin-bottom: 12px;
 }
 
+/* Cor oculta — visível só para admin, dimmed */
+.colorDimmed {
+  opacity: 0.32;
+}
+
 /* ── Footer ───────────────────────────────── */
 .footer {
   display: flex;
@@ -305,6 +326,7 @@
 }
 
 @media (max-width: 600px) {
+  .watermark { width: 38%; bottom: 8px; }
   .body { padding: 12px 14px; }
   .title { font-size: 15px; }
   .comp { font-size: 9px; margin-bottom: 8px; }

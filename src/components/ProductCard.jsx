@@ -20,7 +20,9 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
   const [imgLoaded, setImgLoaded] = useState(false)
 
   const isVisible = product.visible !== false
-  const selectedColor = colors.find(c => c.id === selectedColorId) || null
+  // Admin vê todas as cores (ocultas aparecem dimmed); usuário só vê as visíveis
+  const displayColors = isAdmin ? colors : colors.filter(c => c.visible !== false)
+  const selectedColor = displayColors.find(c => c.id === selectedColorId) || null
   const displaySrc = selectedColor?.image_url || product.image_url
 
   // Primeiros 4 cards carregam com prioridade; o resto é lazy
@@ -78,6 +80,7 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
             />
           </AnimatePresence>
           <div className={styles.imgOverlay} />
+          <img src="/logo.png" alt="" className={styles.watermark} draggable={false} aria-hidden="true" />
           <div className={styles.imgCorner} />
           <div className={styles.zoomHint}>⤢</div>
           {selectedColor && (
@@ -119,19 +122,20 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
             </div>
           )}
 
-          {colors.length > 0 && (
+          {displayColors.length > 0 && (
             <div className={styles.colors}>
-              {colors.map(c => (
-                <ColorDot
-                  key={c.id}
-                  hex={c.hex_color}
-                  hex2={c.hex_color_2 || null}
-                  code={c.code}
-                  name={c.name}
-                  patternUrl={c.pattern_url}
-                  isSelected={selectedColorId === c.id}
-                  onSelect={() => handleColorSelect(c.id)}
-                />
+              {displayColors.map(c => (
+                <span key={c.id} className={isAdmin && c.visible === false ? styles.colorDimmed : undefined}>
+                  <ColorDot
+                    hex={c.hex_color}
+                    hex2={c.hex_color_2 || null}
+                    code={c.code}
+                    name={c.name}
+                    patternUrl={c.pattern_url}
+                    isSelected={selectedColorId === c.id}
+                    onSelect={() => handleColorSelect(c.id)}
+                  />
+                </span>
               ))}
             </div>
           )}

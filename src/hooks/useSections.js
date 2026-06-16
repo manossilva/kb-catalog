@@ -10,7 +10,7 @@ export function useSections() {
     const { data, error } = await supabase
       .from('sections')
       .select('*')
-      .order('name')
+      .order('sort_order', { ascending: true })
     if (!error) setSections(data || [])
     setLoading(false)
   }, [])
@@ -20,12 +20,20 @@ export function useSections() {
   const createSection = useCallback(async (name) => {
     const slug = name
       .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '')
+
+    const { data: maxData } = await supabase
+      .from('sections')
+      .select('sort_order')
+      .order('sort_order', { ascending: false })
+      .limit(1)
+    const nextOrder = ((maxData?.[0]?.sort_order) ?? 0) + 10
+
     const { data, error } = await supabase
       .from('sections')
-      .insert({ name: name.trim(), slug })
+      .insert({ name: name.trim(), slug, sort_order: nextOrder })
       .select()
     if (error) throw error
     await load()
@@ -35,7 +43,7 @@ export function useSections() {
   const updateSection = useCallback(async (id, name) => {
     const slug = name
       .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '')
     const { error } = await supabase
@@ -55,5 +63,33 @@ export function useSections() {
     await load()
   }, [load])
 
-  return { sections, loading, reload: load, createSection, updateSection, deleteSection }
+  const updateSectionAR = useCallback(async (id, ar_ratio) => {
+    const { error } = await supabase
+      .from('sections')
+      .update({ ar_ratio })
+      .eq('id', id)
+    if (error) throw error
+    await load()
+  }, [load])
+
+  const reorderSection = useCallback(async (idA, sortOrderA, idB, sortOrderB) => {
+    // Optimistic update — troca imediata na UI
+    setSections(ss => {
+      const updated = ss.map(s => {
+        if (s.id === idA) return { ...s, sort_order: sortOrderB }
+        if (s.id === idB) return { ...s, sort_order: sortOrderA }
+        return s
+      })
+      return updated.sort((x, y) => (x.sort_order ?? 0) - (y.sort_order ?? 0))
+    })
+
+    const [resA, resB] = await Promise.all([
+      supabase.from('sections').update({ sort_order: sortOrderB }).eq('id', idA),
+      supabase.from('sections').update({ sort_order: sortOrderA }).eq('id', idB),
+    ])
+
+    if (resA.error || resB.error) await load()
+  }, [load])
+
+  return { sections, loading, reload: load, createSection, updateSection, deleteSection, updateSectionAR, reorderSection }
 }

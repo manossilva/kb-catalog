@@ -105,15 +105,38 @@ function ColorEntry({ c, i, total, onUpdate, onRemove, onMoveUp, onMoveDown, onO
     setUploadingImg(false)
   }
 
+  const isColorVisible = c.visible !== false
+
   return (
-    <div className="sub-section">
+    <div className={`sub-section${!isColorVisible ? ` ${styles.colorHidden}` : ''}`}>
       <div className={styles.colorEntryHeader}>
         <span className={styles.colorEntryLabel}>
           {isPattern ? 'Estampa' : 'Cor'} {i + 1}
+          {!isColorVisible && <span className={styles.hiddenBadge}>oculta</span>}
         </span>
-        <div className={styles.orderBtns}>
-          <button type="button" className={styles.orderBtn} onClick={onMoveUp} disabled={i === 0} title="Mover para cima">↑</button>
-          <button type="button" className={styles.orderBtn} onClick={onMoveDown} disabled={i === total - 1} title="Mover para baixo">↓</button>
+        <div className={styles.headerActions}>
+          <button
+            type="button"
+            className={`${styles.colorVisBtn} ${isColorVisible ? styles.colorVisOn : styles.colorVisOff}`}
+            onClick={() => onUpdate(i, 'visible', !isColorVisible)}
+            title={isColorVisible ? 'Ocultar esta cor' : 'Mostrar esta cor'}
+          >
+            {isColorVisible ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            )}
+          </button>
+          <div className={styles.orderBtns}>
+            <button type="button" className={styles.orderBtn} onClick={onMoveUp} disabled={i === 0} title="Mover para cima">↑</button>
+            <button type="button" className={styles.orderBtn} onClick={onMoveDown} disabled={i === total - 1} title="Mover para baixo">↓</button>
+          </div>
         </div>
       </div>
       <div className="row">
@@ -226,7 +249,7 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   )
 
   const [colors, setColors] = useState(
-    product?.colors?.map(c => ({ code: c.code, name: c.name, hex_color: c.hex_color || '#CCCCCC', hex_color_2: c.hex_color_2 || '', pattern_url: c.pattern_url || '', image_url: c.image_url || '', type: c.pattern_url ? 'pattern' : 'solid' })) || []
+    product?.colors?.map(c => ({ code: c.code, name: c.name, hex_color: c.hex_color || '#CCCCCC', hex_color_2: c.hex_color_2 || '', pattern_url: c.pattern_url || '', image_url: c.image_url || '', type: c.pattern_url ? 'pattern' : 'solid', visible: c.visible !== false })) || []
   )
 
   const [saving, setSaving] = useState(false)
@@ -270,7 +293,7 @@ export default function ProductModal({ product, sections, onClose, onSave, onCre
   const removeDim = (si, di)       => { markDirty(); setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: x.dims.filter((_, di2) => di2 !== di) } : x)) }
   const updateDim = (si, di, k, v) => { markDirty(); setSizes(s => s.map((x, idx) => idx === si ? { ...x, dims: x.dims.map((d, di2) => di2 === di ? { ...d, [k]: v } : d) } : x)) }
 
-  const addColor = () => { markDirty(); setColors(c => [...c, { code: '', name: '', hex_color: '#CCCCCC', hex_color_2: '', pattern_url: '', type: 'solid' }]) }
+  const addColor = () => { markDirty(); setColors(c => [...c, { code: '', name: '', hex_color: '#CCCCCC', hex_color_2: '', pattern_url: '', type: 'solid', visible: true }]) }
   const removeColor = i => { markDirty(); setColors(c => c.filter((_, idx) => idx !== i)) }
   const updateColor = (i, k, v) => { markDirty(); setColors(c => c.map((x, idx) => idx === i ? { ...x, [k]: v } : x)) }
   const moveColor = (i, dir) => { markDirty(); setColors(c => {

@@ -7,6 +7,13 @@
   z-index: 40;
 }
 
+/* ── Container externo com setas sobrepostas ── */
+.tabsOuter {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
 .tabs {
   display: flex;
   gap: 2px;
@@ -15,8 +22,86 @@
   overflow-y: visible;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  flex: 1;
 }
+.tabs:active { cursor: grabbing; }
 .tabs::-webkit-scrollbar { display: none; }
+
+/* ── Setas de rolagem com fade ── */
+.fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 64px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.fadeLeft {
+  left: 0;
+  background: linear-gradient(to right, var(--tabs-bg) 45%, transparent);
+  justify-content: flex-start;
+  padding-left: 6px;
+}
+
+.fadeRight {
+  right: 0;
+  background: linear-gradient(to left, var(--tabs-bg) 45%, transparent);
+  justify-content: flex-end;
+  padding-right: 6px;
+}
+
+.arrowBtn {
+  pointer-events: all;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.28);
+  color: var(--gold);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  padding: 0;
+  flex-shrink: 0;
+}
+.arrowBtn:hover {
+  background: rgba(201, 168, 76, 0.22);
+  transform: scale(1.12);
+}
+
+/* ── Barra de rolagem customizada (thumb arrastável) ── */
+.scrollTrack {
+  position: relative;
+  height: 4px;
+  margin: 0 48px 6px;
+  background: rgba(201, 168, 76, 0.08);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.scrollThumb {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: rgba(201, 168, 76, 0.35);
+  border-radius: 2px;
+  cursor: grab;
+  transition: background 0.15s;
+}
+.scrollThumb:hover { background: rgba(201, 168, 76, 0.6); }
+.scrollThumb:active {
+  cursor: grabbing;
+  background: var(--gold);
+}
 
 .tab {
   position: relative;
@@ -108,7 +193,8 @@
   transition: background 0.15s, color 0.15s;
   white-space: nowrap;
 }
-.dropItem:hover { background: rgba(255,255,255,0.05); }
+.dropItem:hover:not(:disabled) { background: rgba(255,255,255,0.05); }
+.dropItem:disabled { opacity: 0.28; cursor: not-allowed; }
 .dropDanger { color: var(--danger); }
 .dropDanger:hover { background: rgba(192, 57, 43, 0.1); }
 .dropActive { color: var(--gold); }
@@ -193,6 +279,9 @@
   .wrap { top: 60px; }
   .border { margin: 0 24px; }
   .menuTrigger { opacity: 1; }
+  .scrollTrack { margin: 0 24px 6px; }
+  .fadeLeft { padding-left: 4px; }
+  .fadeRight { padding-right: 4px; }
 }
 
 @media (max-width: 480px) {
@@ -201,4 +290,7 @@
   .tab { padding: 10px 18px; font-size: 12px; font-weight: 700; letter-spacing: 0.8px; }
   .border { margin: 0 12px; }
   .menuTrigger { opacity: 1; }
+  .scrollTrack { margin: 0 12px 5px; height: 5px; }
+  .arrowBtn { width: 26px; height: 26px; min-width: 26px; font-size: 18px; }
+  .fade { width: 52px; }
 }

@@ -33,7 +33,7 @@ function markVisited() {
 
 export default function App() {
   const { user, loading: authLoading, signIn, signOut } = useAuth()
-  const { sections, createSection, updateSection, deleteSection } = useSections()
+  const { sections, createSection, updateSection, deleteSection, updateSectionAR, reorderSection } = useSections()
   const { products, loading: prodLoading, broadcastUpdate, createProduct, updateProduct, deleteProduct, toggleVisibility, reorderProduct } = useProducts()
   const { theme, toggleTheme } = useTheme()
 
@@ -102,6 +102,8 @@ export default function App() {
         createSection={createSection}
         updateSection={updateSection}
         deleteSection={deleteSection}
+        updateSectionAR={updateSectionAR}
+        reorderSection={reorderSection}
         theme={theme}
         toggleTheme={toggleTheme}
         onForceRefresh={broadcastUpdate}

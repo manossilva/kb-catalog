@@ -286,7 +286,53 @@
   text-transform: uppercase;
   letter-spacing: 1.2px;
   color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
+
+.hiddenBadge {
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text2);
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  padding: 1px 5px;
+}
+
+/* Cor entry com visibilidade desligada */
+.colorHidden {
+  opacity: 0.5;
+  border-style: dashed !important;
+}
+
+/* Grupo de ações no header (olho + setas) */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Botão de visibilidade da cor */
+.colorVisBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius2);
+  border: 1px solid var(--border2);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.colorVisOn  { color: var(--gold); border-color: rgba(201, 168, 76, 0.4); }
+.colorVisOff { color: var(--text2); border-color: var(--border); }
+.colorVisBtn:hover { border-color: var(--gold); color: var(--gold); background: rgba(201, 168, 76, 0.08); }
 
 .orderBtns {
   display: flex;
