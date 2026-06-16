@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { getImageUrl } from '../lib/imageUrl'
 import styles from './Lightbox.module.css'
 
-export default function Lightbox({ src, alt, onClose }) {
+export default function Lightbox({ src, alt, onClose, showWatermark = false }) {
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     // Bloqueia scroll do body enquanto lightbox está aberto
@@ -63,7 +63,9 @@ export default function Lightbox({ src, alt, onClose }) {
             className={styles.img}
             onError={e => { e.target.style.opacity = 0.3 }}
           />
-          <img src="/logo.png" alt="" className={styles.watermark} draggable={false} aria-hidden="true" />
+          {showWatermark && (
+            <img src="/logo.png" alt="" className={styles.watermark} draggable={false} aria-hidden="true" />
+          )}
           <div className={styles.topBar}>
             <span className={styles.label}>{alt}</span>
           </div>

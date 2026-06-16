@@ -62,11 +62,11 @@
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 42%;
-  max-width: 115px;
-  min-width: 52px;
+  width: 26%;
+  max-width: 72px;
+  min-width: 34px;
   object-fit: contain;
-  opacity: 0.22;
+  opacity: 0.20;
   pointer-events: none;
   user-select: none;
   filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(0, 0, 0, 0.55));

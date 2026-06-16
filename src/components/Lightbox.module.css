@@ -83,11 +83,11 @@
   bottom: 48px;
   left: 50%;
   transform: translateX(-50%);
-  width: 22%;
-  max-width: 160px;
-  min-width: 80px;
+  width: 13%;
+  max-width: 100px;
+  min-width: 50px;
   object-fit: contain;
-  opacity: 0.22;
+  opacity: 0.20;
   pointer-events: none;
   user-select: none;
   filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(0, 0, 0, 0.65));

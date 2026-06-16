@@ -80,7 +80,9 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
             />
           </AnimatePresence>
           <div className={styles.imgOverlay} />
-          <img src="/logo.png" alt="" className={styles.watermark} draggable={false} aria-hidden="true" />
+          {selectedColor && (
+            <img src="/logo.png" alt="" className={styles.watermark} draggable={false} aria-hidden="true" />
+          )}
           <div className={styles.imgCorner} />
           <div className={styles.zoomHint}>⤢</div>
           {selectedColor && (
@@ -194,6 +196,7 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete, onTogg
             src={displaySrc}
             alt={selectedColor ? `${product.title} — ${selectedColor.name}` : product.title}
             onClose={() => setLightbox(false)}
+            showWatermark={selectedColor !== null}
           />
         )}
       </AnimatePresence>
