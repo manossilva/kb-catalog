@@ -163,6 +163,7 @@ export default function Tabs({ sections, activeTab, onTabChange, isAdmin, onDele
 
   const tabsDrag = useRef({ active: false, moved: false, startX: 0, startScroll: 0 })
   const thumbDrag = useRef({ active: false, startX: 0, startScroll: 0 })
+  const scrollThumbRef = useRef(null)
 
   const updateScroll = useCallback(() => {
     const el = tabsRef.current
@@ -195,47 +196,70 @@ export default function Tabs({ sections, activeTab, onTabChange, isAdmin, onDele
     }
   }, [updateScroll, sections])
 
-  // Handlers globais de mouse/touch para arrastar abas e thumb
+  // Handlers globais apenas para mouse (desktop) — touch é tratado direto no elemento thumb
   useEffect(() => {
-    const onMove = (e) => {
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX
-
+    const onMouseMove = (e) => {
       if (tabsDrag.current.active) {
-        const dx = clientX - tabsDrag.current.startX
+        const dx = e.clientX - tabsDrag.current.startX
         if (Math.abs(dx) > 5) {
           tabsDrag.current.moved = true
           if (tabsRef.current) tabsRef.current.scrollLeft = tabsDrag.current.startScroll - dx
         }
       }
-
       if (thumbDrag.current.active && tabsRef.current && trackRef.current) {
         const el = tabsRef.current
         const trackWidth = trackRef.current.clientWidth
         const thumbWidthPx = (el.clientWidth / el.scrollWidth) * trackWidth
         const maxThumbLeft = trackWidth - thumbWidthPx
         const scrollRange = el.scrollWidth - el.clientWidth
-        const dxPx = clientX - thumbDrag.current.startX
+        const dxPx = e.clientX - thumbDrag.current.startX
         const scrollPerPx = maxThumbLeft > 0 ? scrollRange / maxThumbLeft : 1
         el.scrollLeft = Math.max(0, Math.min(scrollRange, thumbDrag.current.startScroll + dxPx * scrollPerPx))
       }
     }
-
-    const onUp = () => {
+    const onMouseUp = () => {
       tabsDrag.current.active = false
       thumbDrag.current.active = false
     }
-
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseup', onUp)
-    window.addEventListener('touchmove', onMove, { passive: true })
-    window.addEventListener('touchend', onUp)
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mouseup', onMouseUp)
     return () => {
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('mouseup', onUp)
-      window.removeEventListener('touchmove', onMove)
-      window.removeEventListener('touchend', onUp)
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mouseup', onMouseUp)
     }
   }, [])
+
+  // Attach touch listeners directly to the thumb DOM node (non-passive touchmove for preventDefault)
+  // This avoids the global window touchmove that was freezing page scroll on mobile
+  useEffect(() => {
+    const thumbEl = scrollThumbRef.current
+    if (!thumbEl) return
+    const onTouchStart = (e) => {
+      e.stopPropagation()
+      thumbDrag.current = { active: true, startX: e.touches[0].clientX, startScroll: tabsRef.current?.scrollLeft ?? 0 }
+    }
+    const onTouchMove = (e) => {
+      if (!thumbDrag.current.active || !tabsRef.current || !trackRef.current) return
+      e.preventDefault()
+      const el = tabsRef.current
+      const trackWidth = trackRef.current.clientWidth
+      const thumbWidthPx = (el.clientWidth / el.scrollWidth) * trackWidth
+      const maxThumbLeft = trackWidth - thumbWidthPx
+      const scrollRange = el.scrollWidth - el.clientWidth
+      const dxPx = e.touches[0].clientX - thumbDrag.current.startX
+      const scrollPerPx = maxThumbLeft > 0 ? scrollRange / maxThumbLeft : 1
+      el.scrollLeft = Math.max(0, Math.min(scrollRange, thumbDrag.current.startScroll + dxPx * scrollPerPx))
+    }
+    const onTouchEnd = () => { thumbDrag.current.active = false }
+    thumbEl.addEventListener('touchstart', onTouchStart, { passive: true })
+    thumbEl.addEventListener('touchmove', onTouchMove, { passive: false })
+    thumbEl.addEventListener('touchend', onTouchEnd, { passive: true })
+    return () => {
+      thumbEl.removeEventListener('touchstart', onTouchStart)
+      thumbEl.removeEventListener('touchmove', onTouchMove)
+      thumbEl.removeEventListener('touchend', onTouchEnd)
+    }
+  }, [thumb.visible])
 
   const onTabsMouseDown = (e) => {
     if (e.button !== 0) return
@@ -255,11 +279,6 @@ export default function Tabs({ sections, activeTab, onTabChange, isAdmin, onDele
     e.stopPropagation()
     e.preventDefault()
     thumbDrag.current = { active: true, startX: e.clientX, startScroll: tabsRef.current.scrollLeft }
-  }
-
-  const onThumbTouchStart = (e) => {
-    e.stopPropagation()
-    thumbDrag.current = { active: true, startX: e.touches[0].clientX, startScroll: tabsRef.current.scrollLeft }
   }
 
   const onTrackClick = (e) => {
@@ -358,10 +377,10 @@ export default function Tabs({ sections, activeTab, onTabChange, isAdmin, onDele
           onClick={onTrackClick}
         >
           <div
+            ref={scrollThumbRef}
             className={styles.scrollThumb}
             style={{ left: `${thumb.left}%`, width: `${thumb.width}%` }}
             onMouseDown={onThumbMouseDown}
-            onTouchStart={onThumbTouchStart}
             onClick={e => e.stopPropagation()}
           />
         </div>

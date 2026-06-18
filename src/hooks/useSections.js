@@ -20,7 +20,7 @@ export function useSections() {
   const createSection = useCallback(async (name) => {
     const slug = name
       .toLowerCase()
-      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '')
 
@@ -43,7 +43,7 @@ export function useSections() {
   const updateSection = useCallback(async (id, name) => {
     const slug = name
       .toLowerCase()
-      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '')
     const { error } = await supabase
@@ -73,7 +73,6 @@ export function useSections() {
   }, [load])
 
   const reorderSection = useCallback(async (idA, sortOrderA, idB, sortOrderB) => {
-    // Optimistic update — troca imediata na UI
     setSections(ss => {
       const updated = ss.map(s => {
         if (s.id === idA) return { ...s, sort_order: sortOrderB }
